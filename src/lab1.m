@@ -45,8 +45,8 @@ try
   % The following code generates a sinusoidal trajectory to be
   % executed on joint 1 of the arm and iteratively sends the list of
   % setpoints to the Nucleo firmware. 
-  shoulder = [0, -400, 400, -400, 400, 0];
-  elbow = [0, 0, 0, 0, 0, 0];
+  shoulder = [100, 50, 100, -50, 60, 0];
+  elbow = [100, 50, 0, 0, 0, 0];
   wrist = [0, 0, 0, 0, 0, 0];
   
 
@@ -73,10 +73,13 @@ try
        pause(0.003); % Minimum81cd190760243010df8062b3e4106a585b3cff80 amount of time required between write and read
        
        %pp.read reads a returned 15 float backet from the nucleo.
+       
        returnPacket = pp.read(SERV_ID);
+       
        ret = [ret;returnPacket'];
        i= i+1;
-        
+       pause(0.003);
+      
        
        toc
       
