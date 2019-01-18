@@ -45,7 +45,7 @@ try
   % The following code generates a sinusoidal trajectory to be
   % executed on joint 1 of the arm and iteratively sends the list of
   % setpoints to the Nucleo firmware. 
-  viaPts = [0, -400, 400, -400, 400, 0];
+  viaPts = [0, -400, 400, -400, 400, 0, 0, -400, 400, -400, 400, 0];
 
   ret = [];
 
@@ -59,13 +59,13 @@ try
       packet(1) = k;
       
 
-     
+     viaPts = zeros(1, 100);
       % Send packet to the server and get the response
       
       %pp.write sends a 15 float packet to the micro controller
        pp.write(SERV_ID, packet); 
        
-       pause(0.003); % Minimum amount of time required between write and read
+       pause(0.003); % Minimum81cd190760243010df8062b3e4106a585b3cff80 amount of time required between write and read
        
        %pp.read reads a returned 15 float backet from the nucleo.
        returnPacket = pp.read(SERV_ID);
@@ -108,9 +108,15 @@ catch exception
     disp('Exited on error, clean shutdown');
 end
 % Clear up memory upon termination
+ rep = [];
  ret(1,:) = [];
- csvwrite('Return File', ret);
+ rep = ret;
+ ret = ret(:,1);
+ plot(ret);
+ csvwrite('Return File', rep);
+ csvwrite('Plot File', ret);
 
 pp.shutdown()
 
+%viaPts = zeros(1, 100);
 toc
