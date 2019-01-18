@@ -45,18 +45,23 @@ try
   % The following code generates a sinusoidal trajectory to be
   % executed on joint 1 of the arm and iteratively sends the list of
   % setpoints to the Nucleo firmware. 
-  viaPts = [0, -400, 400, -400, 400, 0, 0, -400, 400, -400, 400, 0];
+  shoulder = [0, -400, 400, -400, 400, 0];
+  elbow = [0, 0, 0, 0, 0, 0];
+  wrist = [0, 0, 0, 0, 0, 0];
+  
 
   ret = [];
 
   % Iterate through a sine wave for joint values
-  for k = viaPts
+  for tea = 1:length(shoulder)
       i = 1;
       
       tic
       %incremtal = (single(k) / sinWaveInc);
       packet = zeros(15, 1, 'single');
-      packet(1) = k;
+      packet(1) = shoulder(tea);
+      packet(2) = elbow(tea);
+      packet(3) = wrist(tea);
       
 
      viaPts = zeros(1, 100);
