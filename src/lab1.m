@@ -47,14 +47,17 @@ try
   % setpoints to the Nucleo firmware. 
   viaPts = [0, -400, 400, -400, 400, 0];
 
-  
+  ret = [];
 
   % Iterate through a sine wave for joint values
   for k = viaPts
+      i = 1;
+      
       tic
       %incremtal = (single(k) / sinWaveInc);
       packet = zeros(15, 1, 'single');
       packet(1) = k;
+      
 
      
       % Send packet to the server and get the response
@@ -66,8 +69,13 @@ try
        
        %pp.read reads a returned 15 float backet from the nucleo.
        returnPacket = pp.read(SERV_ID);
-      toc
-
+       ret = [ret;returnPacket'];
+       i= i+1;
+        
+       
+       toc
+      
+       
       if DEBUG
           disp('Sent Packet:');
           disp(packet);
@@ -100,6 +108,9 @@ catch exception
     disp('Exited on error, clean shutdown');
 end
 % Clear up memory upon termination
+ ret(1,:) = [];
+ csvwrite('Return File', ret);
+
 pp.shutdown()
 
 
