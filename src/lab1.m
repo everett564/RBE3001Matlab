@@ -31,10 +31,24 @@ myHIDSimplePacketComs.setVid(vid);
 myHIDSimplePacketComs.connect();
 % Create a PacketProcessor object to send data to the nucleo firmware
 pp = PacketProcessor(myHIDSimplePacketComs); 
+f = figure
+figure = plot([0,0],[0,0])
+hold on
+xlim([0,1000])
+ylim([-1000,1000])
+xAxis = [];
 try
   SERV_ID = 01; 
   SERV_ID_READ = 03;% we will be talking to server ID 37 on
   SERV_ID_PID = 04;% the Nucleo
+%   
+%   pp.write(SERV_ID_READ, zeros(15,1,'single'));
+%   pause(.003);
+%   returnPacket2 = pp.read(SERV_ID_READ);
+%   homePos = [];
+%   homePos(1,1:3) = returnPacket2(1:3,1);
+
+  
   
   
   Kp_Shoulder=.001;
@@ -67,7 +81,12 @@ try
   packet(7) = Kp_Wrist;
   packet(8) = Ki_Wrist;
   packet(9) = Kd_Wrist;
-  
+%   
+%   packet(11) = 1;
+%   packet(12) = homePos(1);
+%   packet(13) = homePos(2);
+%   packet(14) = homePos(3);
+%   
   pp.write(SERV_ID_PID,packet);
   pause(.003);
   
@@ -81,12 +100,13 @@ try
   %wrist = [0, 221, 386, 79, 129, 0];
   
   
-  shoulder = [0, -295, -295, -295,-295, -295];
-  elbow = [0, 444, 444, 444, 444, 444];
-  wrist = [0, 129, 129, 129, 129, 129];
+  shoulder = [0, 100,0, 0,0, 0];
+  elbow = [0, 0, 0, 0, 0, 0];
+  wrist = [0, 0, 0, 0, 0, 0];
   
 
   ret = [];
+  ret2 = [];
 
   % Iterate through a sine wave for joint values
   
@@ -121,11 +141,18 @@ try
        pause(0.003);
        returnPacket = pp.read(SERV_ID_READ);
        
-       ret = [ret;returnPacket'];
+       ret = [ret;returnPacket(1)];
+       ret2 = [ret2;returnPacket(2)];
+       xAxis = [xAxis;i];
        i= i+1;
-       
-      
-       
+%         xAxis(i,1) = i;
+        set(figure, 'Xdata', xAxis');
+        set(figure, 'Ydata', ret);
+        %drawnow
+        %set(figure, 'Ydata', ret2);
+        %plot(x(1:i),ret(1:i))
+        
+        drawnow
        toc
       
        
@@ -160,24 +187,26 @@ catch exception
     getReport(exception)
     disp('Exited on error, clean shutdown');
 end
+
+
 % Clear up memory upon termination
- rep = [];
- retE = [];
- retW = [];
- 
- ret(1,:) = [];
- rep = ret;
- ret = ret(:,1:3);
- 
- 
- plot(ret);
+%  rep = [];
+%  retE = [];
+%  retW = [];
+%  
+%  ret(1,:) = [];
+%  rep = ret;
+%  ret = ret(:,1:3);
+%  
+%  
+%  plot(ret);
 % plot(retE);
  %plot(retW);
  
- csvwrite('Return File', rep);
- csvwrite('Plot File Shoulder', ret);
- csvwrite('Plot File Elbow', retE);
- csvwrite('Plot File Wrist', retW);
+%  csvwrite('Return File', rep);
+%  csvwrite('Plot File Shoulder', ret);
+%  csvwrite('Plot File Elbow', retE);
+%  csvwrite('Plot File Wrist', retW);
 
 pp.shutdown()
 
