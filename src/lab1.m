@@ -100,13 +100,14 @@ try
   %wrist = [0, 221, 386, 79, 129, 0];
   
   
-  shoulder = [0, 100,0, 0,0, 0];
-  elbow = [0, 0, 0, 0, 0, 0];
-  wrist = [0, 0, 0, 0, 0, 0];
+  shoulder = [0, 0,0, 0,0, 0,0,0,0,0];
+  elbow = [0, 0,0, 0,0, 0,0,0,0,0];
+  wrist = [0, 0,0, 0,0, 0,0,0,0,0];
   
 
   ret = [];
   ret2 = [];
+  ret3 = [];
 
   % Iterate through a sine wave for joint values
   
@@ -143,6 +144,7 @@ try
        
        ret = [ret;returnPacket(1)];
        ret2 = [ret2;returnPacket(2)];
+       ret3 = [ret3;returnPacket(3)];
        xAxis = [xAxis;i];
        i= i+1;
 %         xAxis(i,1) = i;
@@ -187,7 +189,9 @@ catch exception
     getReport(exception)
     disp('Exited on error, clean shutdown');
 end
-
+retAvg=sum(ret(1:10))/10;
+ret2Avg=sum(ret2(1:10))/10;
+ret3Avg=sum(ret3(1:10))/10;
 
 % Clear up memory upon termination
 %  rep = [];
