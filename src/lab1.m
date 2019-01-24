@@ -32,10 +32,9 @@ myHIDSimplePacketComs.connect();
 % Create a PacketProcessor object to send data to the nucleo firmware
 pp = PacketProcessor(myHIDSimplePacketComs); 
 f = figure
-figure = plot([0,0],[0,0])
-hold on
-xlim([0,1000])
-ylim([-1000,1000])
+figure = plot3([0,0],[0,0],[0,0])
+%hold on
+
 xAxis = [];
 try
   SERV_ID = 01; 
@@ -100,8 +99,8 @@ try
   %wrist = [0, 221, 386, 79, 129, 0];
   
   
-  shoulder = [0, 0,0, 0,0, 0,0,0,0,0];
-  elbow = [0, 0,0, 0,0, 0,0,0,0,0];
+  shoulder = [0, 100,0, 200,0, 300,0,0,0,0];
+  elbow = [0, 50,0, 100, 100, 100,0,0,0,0];
   wrist = [0, 0,0, 0,0, 0,0,0,0,0];
   
 
@@ -119,9 +118,6 @@ try
      
       tic
       %incremtal = (single(k) / sinWaveInc);
-      
-      
-      
 
      viaPts = zeros(1, 100);
       % Send packet to the server and get the response
@@ -142,19 +138,23 @@ try
        pause(0.003);
        returnPacket = pp.read(SERV_ID_READ);
        
+       plotDaArm(returnPacket(1:3))
+       
+       
        ret = [ret;returnPacket(1)];
        ret2 = [ret2;returnPacket(2)];
        ret3 = [ret3;returnPacket(3)];
-       xAxis = [xAxis;i];
+       
+      % xAxis = [xAxis;i];
        i= i+1;
 %         xAxis(i,1) = i;
-        set(figure, 'Xdata', xAxis');
-        set(figure, 'Ydata', ret);
+       % set(figure, 'Xdata', xAxis');
+       % set(figure, 'Ydata', ret);
         %drawnow
         %set(figure, 'Ydata', ret2);
         %plot(x(1:i),ret(1:i))
         
-        drawnow
+        %drawnow
        toc
       
        
@@ -189,9 +189,9 @@ catch exception
     getReport(exception)
     disp('Exited on error, clean shutdown');
 end
-retAvg=sum(ret(1:10))/10;
-ret2Avg=sum(ret2(1:10))/10;
-ret3Avg=sum(ret3(1:10))/10;
+% retAvg=sum(ret(1:10))/10;
+% ret2Avg=sum(ret2(1:10))/10;
+% ret3Avg=sum(ret3(1:10))/10;
 
 % Clear up memory upon termination
 %  rep = [];
