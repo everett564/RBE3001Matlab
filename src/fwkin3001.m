@@ -1,8 +1,8 @@
 
 function [P1 P2 P3] = fwkin3001(t1,t2,in3)
-    t1 = -t1/682; % keion says this is 4096
-    t2 = t2/682;
-    in3 = in3/682;
+    t1 = -(t1*6.28)/4096; % keion says this is 4096
+    t2 = (t2*6.28)/4096;
+    in3 = (in3*6.28)/4096;
     
 
     l1 = 135;
@@ -52,6 +52,8 @@ function [P1 P2 P3] = fwkin3001(t1,t2,in3)
     P3 = T03(1:3, 4);
     P2 = T02(1:3, 4);
     P1 = T01(1:3, 4);
+   
+    
     
     
 end

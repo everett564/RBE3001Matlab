@@ -31,11 +31,16 @@ myHIDSimplePacketComs.setVid(vid);
 myHIDSimplePacketComs.connect();
 % Create a PacketProcessor object to send data to the nucleo firmware
 pp = PacketProcessor(myHIDSimplePacketComs); 
-f = figure
-figure = plot3([0,0],[0,0],[0,0])
-%hold on
+f = figure;
+f2 = figure;
+f3 = figure;
 
+figure = plot3([0,0],[0,0],[0,0]);
+%hold on
+setpts = [];
 xAxis = [];
+TipPos = [];
+ 
 try
   SERV_ID = 01; 
   SERV_ID_READ = 03;% we will be talking to server ID 37 on
@@ -47,8 +52,7 @@ try
 %   homePos = [];
 %   homePos(1,1:3) = returnPacket2(1:3,1);
 
-  
-  
+
   
   Kp_Shoulder=.001;
   Ki_Shoulder=.001;
@@ -99,9 +103,9 @@ try
   %wrist = [0, 221, 386, 79, 129, 0];
   
   
-  shoulder = [0, 100,0, 200,0, 300,0,0,0,0];
-  elbow = [0, 50,0, 100, 100, 100,0,0,0,0];
-  wrist = [0, 0,0, 0,0, 0,0,0,0,0];
+  shoulder = [0, 0,0, 0,0, 0,0,0,0,0];
+  elbow = [0, 0, 7.55, 55.02, 580, 100, 100,100,100,100];
+  wrist = [0, 0, -254.75, 302.5,-254.75, 0,0,0,0,0];
   
 
   ret = [];
@@ -123,7 +127,7 @@ try
       % Send packet to the server and get the response
       
       %pp.write sends a 15 float packet to the micro controller
-       if mod(i,166)==0
+       if mod(i,75)==0
         packet = zeros(15, 1, 'single');
         packet(1) = shoulder(tea);
         packet(2) = elbow(tea);
@@ -139,15 +143,20 @@ try
        returnPacket = pp.read(SERV_ID_READ);
        
        plotDaArm(returnPacket(1:3))
+       TipVals = plotDaArm(returnPacket(1:3));
+       TipPos = [TipPos; TipVals'];
+       csvwrite('Tip Position', TipPos);
        
+       setpts = [setpts; returnPacket(1:3)'];
+       csvwrite('Set Points', setpts);
        
        ret = [ret;returnPacket(1)];
        ret2 = [ret2;returnPacket(2)];
        ret3 = [ret3;returnPacket(3)];
        
-      % xAxis = [xAxis;i];
+       % xAxis = [xAxis;i];
        i= i+1;
-%         xAxis(i,1) = i;
+       % xAxis(i,1) = i;
        % set(figure, 'Xdata', xAxis');
        % set(figure, 'Ydata', ret);
         %drawnow
@@ -182,7 +191,7 @@ try
           %disp(returnPacket2);
       end
       toc
-      pause(.003) %timeit(returnPacket) !FIXME why is this needed?
+      pause(.003); %timeit(returnPacket) !FIXME why is this needed?
       
   end
 catch exception
@@ -206,6 +215,21 @@ end
 %  plot(ret);
 % plot(retE);
  %plot(retW);
+ 
+ clear title xlabel ylabel
+ close all
+ 
+ figure(2)
+ %figure('Name', 'Tip Position', 'NumberTitle', 'off')
+ plot(TipPos)
+ 
+ 
+ figure(3)
+ %figure('Name', 'Angles', 'NumberTitle', 'off')
+ plot(setpts)
+
+ 
+ 
  
 %  csvwrite('Return File', rep);
 %  csvwrite('Plot File Shoulder', ret);
