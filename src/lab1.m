@@ -31,12 +31,13 @@ myHIDSimplePacketComs.setVid(vid);
 myHIDSimplePacketComs.connect();
 % Create a PacketProcessor object to send data to the nucleo firmware
 pp = PacketProcessor(myHIDSimplePacketComs); 
-f = figure;
-f2 = figure;
-f3 = figure;
+figure('Name', 'Current Position', 'NumberTitle', 'off')
+plot3([0,0],[0,0],[0,0]);
+ title('Current Postition')
+ xlabel('Position (Encoder Ticks)') 
+ ylabel('Position (Encoder Ticks)')
+ zlabel('Position (Encoder Ticks)')
 
-figure = plot3([0,0],[0,0],[0,0]);
-%hold on
 setpts = [];
 xAxis = [];
 TipPos = [];
@@ -118,10 +119,12 @@ try
   %for tea = 1:length(shoulder)
   i=1;
   tea=1;
+  tic
+  timerVal = tic;
   
   while tea<=6
      
-      tic
+      
       %incremtal = (single(k) / sinWaveInc);
 
      viaPts = zeros(1, 100);
@@ -142,15 +145,15 @@ try
        pp.write(SERV_ID_READ, zeros(15,1,'single'));
        pause(0.003);
        returnPacket = pp.read(SERV_ID_READ);
-       timerVal=tic;
-       elapsedTime = elapsedTime + toc(timerVal);
+       %timerVal = tic;
+       elapsedTime = toc(timerVal);
        
        plotDaArm(returnPacket(1:3))
        TipVals = plotDaArm(returnPacket(1:3));
        elap = [elap; elapsedTime];
        TipPos = [TipPos; TipVals'];
        csvwrite('Tip Position', TipPos);
-       
+
        setpts = [setpts; returnPacket(1:3)'];
        csvwrite('Set Points', setpts);
        
@@ -168,8 +171,7 @@ try
         %plot(x(1:i),ret(1:i))
         
         %drawnow
-       toc
-    
+       
        
       if DEBUG
           disp('Sent Packet:');
@@ -222,20 +224,71 @@ csvwrite('Time', elap);
 % plot(retE);
  %plot(retW);
  
+
+ 
  clear title xlabel ylabel
  close all
  
+ xTip = TipPos(:,1);
+ yTip = TipPos(:,2);
+ zTip = TipPos(:,3);
  
- %figure('Name', 'Tip Position', 'NumberTitle', 'off')
- plot(elap,TipPos)
+ shoulderPos = setpts(:,1);
+ elbowPos = setpts(:,2);
+ wristPos = setpts(:,3);
+ 
+ jvel1 = diff(shoulderPos)/diff(elap);
+ jvel2 = diff(elbowPos)/diff(elap);
+ jvel3 = diff(wristPos)/diff(elap);
+ 
+ figure('Name', 'Tip Time', 'NumberTitle', 'off')
+ hold on;
+ plot(elap,xTip);
+ plot(elap,zTip);
+ plot(elap,yTip);
+ hold off;
+ title('Tip Time')
+ xlabel('Time (Seconds)') 
+ ylabel('Position (Encoder Ticks)')
+ legend('x-Position', 'y-Position', 'z-Position')
+ 
+ figure('Name', 'Tip Position', 'NumberTitle', 'off')
+ hold on;
+ plot(xTip, zTip);
+ plot(191.2566,122.9888, 'ro');
+ plot(112.3549,-20.2409, 'ro');
+ plot(262.5972,5.2783, 'ro');
  
  
- figure;
- %figure('Name', 'Angles', 'NumberTitle', 'off')
- plot(elap, setpts)
-
+ hold off;
+ title(' Tip Position')
+ xlabel('Position (Encoder Ticks)') 
+ ylabel('Position (Encoder Ticks)')
+  
+ figure('Name', 'Joint Postition', 'NumberTitle', 'off')
+ hold on;
+ plot(elap, shoulderPos);
+ plot(elap, elbowPos);
+ plot(elap, wristPos);
+ hold off;
+ title('Joint Postition')
+ xlabel('Time (Seconds)') 
+ ylabel('Position (Encoder Ticks)')
+ legend('Shoulder Position', 'Elbow Position', 'Wrist Position')
  
- 
+ figure('Name', 'Joint Velocity', 'NumberTitle', 'off')
+ hold on;
+%  plot(elap(2:2:end), jvel1(1:2:end));
+%  plot(elap(2:2:end), jvel2(1:2:end));
+%  plot(elap(2:2:end), jvel3(1:2:end));
+ plot(elap(2:end), jvel1);
+ plot(elap(2:end), jvel2);
+ plot(elap(2:end), jvel3);
+ hold off;
+ title('Joint Velocity')
+ xlabel('Time (Seconds)') 
+ ylabel('Velocity (Encoder Ticks/Second')
+ legend('Shoulder Velocity', 'Elbow Velocity', 'Wrist Velocity')
  
 %  csvwrite('Return File', rep);
 %  csvwrite('Plot File Shoulder', ret);
