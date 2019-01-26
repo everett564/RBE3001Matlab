@@ -40,7 +40,8 @@ figure = plot3([0,0],[0,0],[0,0]);
 setpts = [];
 xAxis = [];
 TipPos = [];
- 
+elap = [];
+elapsedTime = 0;
 try
   SERV_ID = 01; 
   SERV_ID_READ = 03;% we will be talking to server ID 37 on
@@ -141,9 +142,12 @@ try
        pp.write(SERV_ID_READ, zeros(15,1,'single'));
        pause(0.003);
        returnPacket = pp.read(SERV_ID_READ);
+       timerVal=tic;
+       elapsedTime = elapsedTime + toc(timerVal);
        
        plotDaArm(returnPacket(1:3))
        TipVals = plotDaArm(returnPacket(1:3));
+       elap = [elap; elapsedTime];
        TipPos = [TipPos; TipVals'];
        csvwrite('Tip Position', TipPos);
        
@@ -159,13 +163,13 @@ try
        % xAxis(i,1) = i;
        % set(figure, 'Xdata', xAxis');
        % set(figure, 'Ydata', ret);
-        %drawnow
+        %drawnowap = [elap; elapsedtime];
         %set(figure, 'Ydata', ret2);
         %plot(x(1:i),ret(1:i))
         
         %drawnow
        toc
-      
+    
        
       if DEBUG
           disp('Sent Packet:');
@@ -198,6 +202,8 @@ catch exception
     getReport(exception)
     disp('Exited on error, clean shutdown');
 end
+csvwrite('Time', elap);
+
 % retAvg=sum(ret(1:10))/10;
 % ret2Avg=sum(ret2(1:10))/10;
 % ret3Avg=sum(ret3(1:10))/10;
@@ -219,14 +225,14 @@ end
  clear title xlabel ylabel
  close all
  
- figure(2)
+ 
  %figure('Name', 'Tip Position', 'NumberTitle', 'off')
- plot(TipPos)
+ plot(elap,TipPos)
  
  
- figure(3)
+ figure;
  %figure('Name', 'Angles', 'NumberTitle', 'off')
- plot(setpts)
+ plot(elap, setpts)
 
  
  
