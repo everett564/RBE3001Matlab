@@ -1,15 +1,6 @@
 %%
-% RBE3001 - Laboratory 1 
+% RBE3001 - Laboratory 3 
 % 
-% Instructions
-% ------------
-% Welcome again! This MATLAB script is your starting point for Lab
-% 1 of RBE3001. The sample code below demonstrates how to establish
-% communication between this script and the Nucleo firmware, send
-% setpoint commands and receive sensor data.
-% 
-% IMPORTANT - understanding the code below requires being familiar
-% with the Nucleo firmware. Read that code first.
 clear
 clear java
 %clear import;
@@ -104,49 +95,50 @@ try
   %wrist = [0, 221, 386, 79, 129, 0];
   
   
-  elbowPoly1 = cubePoly(1, 5, 0, 0, 7.55, 55.02);
-  wristPoly1 = cubePoly(1, 5, 0, 0, -254.75, 302.5);
-  
-  elbowPoly2 = cubePoly(5, 9, 0, 0, 55.02, 580);
-  wristPoly2 = cubePoly(5, 9, 0, 0, 302.5, -254.75);
-  
-  elbowPoly3 = cubePoly(9, 13, 0, 0, 580, 7.55);
-  wristPoly3 = cubePoly(9, 13, 0, 0, -254.75, -254.75);
-  
-  elbowPose(1) = 0;
-  wristPose(1) = 0;
-  
-  for i=1:10
-      t = (i-1)*.4 +1;
-      elbowPose(i+1) = polyToPos(elbowPoly1, t);
-      wristPose(i+1) = polyToPos(wristPoly1, t);
-  end
-  
-  for j=1:10
-      t = (j-1)*.4 +5;
-      elbowPose(j+11) = polyToPos(elbowPoly2, t);
-      wristPose(j+11) = polyToPos(wristPoly2, t);
-  end
-      
-  for k=1:10
-      t = (k-1)*.4 +9;
-      elbowPose(k+21) = polyToPos(elbowPoly3, t);
-      wristPose(k+21) = polyToPos(wristPoly3, t);
-  end
-  
-  elbowPose(32) = 0;
-  wristPose(32) = 0;
-  
-  shoulder = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-  elbow = [0, 0, 7.55, 55.02, 580, 100, 100,100,100,100];
-  wrist = [0, 0, -254.75, 302.5,-254.75, 0,0,0,0,0];
-  
+%   elbowPoly1 = cubePoly(1, 5, 0, 0, 7.55, 55.02);
+%   wristPoly1 = cubePoly(1, 5, 0, 0, -254.75, 302.5);
+%   
+%   elbowPoly2 = cubePoly(5, 9, 0, 0, 55.02, 580);
+%   wristPoly2 = cubePoly(5, 9, 0, 0, 302.5, -254.75);
+%   
+%   elbowPoly3 = cubePoly(9, 13, 0, 0, 580, 7.55);
+%   wristPoly3 = cubePoly(9, 13, 0, 0, -254.75, -254.75);
+%   
+%   elbowPose(1) = 0;
+%   wristPose(1) = 0;
+%   
+%   for i=1:10
+%       t = (i-1)*.4 +1;
+%       elbowPose(i+1) = polyToPos(elbowPoly1, t);
+%       wristPose(i+1) = polyToPos(wristPoly1, t);
+%   end
+%   
+%   for j=1:10
+%       t = (j-1)*.4 +5;
+%       elbowPose(j+11) = polyToPos(elbowPoly2, t);
+%       wristPose(j+11) = polyToPos(wristPoly2, t);
+%   end
+%       
+%   for k=1:10
+%       t = (k-1)*.4 +9;
+%       elbowPose(k+21) = polyToPos(elbowPoly3, t);
+%       wristPose(k+21) = polyToPos(wristPoly3, t);
+%   end
+%   
+%   elbowPose(32) = 0;
+%   wristPose(32) = 0;
+%   
+   shoulder = [0,inversePoint1(1),0];
+   elbow = [0,inversePoint1(2),0];
+   wrist = [0,inversePoint1(3),0];
 
   ret = [];
   ret2 = [];
   ret3 = [];
-
-  % Iterate through a sine wave for joint values
+ 
+  inversePoint1 = ikin([225,120,100]);
+  inversePoint2 = ikin([100,-120,50]);
+  
   
   %for tea = 1:length(shoulder)
   i=1;
@@ -166,9 +158,9 @@ try
       %pp.write sends a 15 float packet to the micro controller
        if counter>=0.4
         packet = zeros(15, 1, 'single');
-        packet(1) = shoulder(tea);
-        packet(2) = elbowPose(tea);
-        packet(3) = wristPose(tea);
+        packet(1) = shoulder(tea)*(4096/2*pi);
+        packet(2) = elbowPose(tea)*(4096/2*pi);
+        packet(3) = wristPose(tea)*(4096/2*pi);
         tea=tea+1;
         pp.write(SERV_ID, packet); 
         counter = 0

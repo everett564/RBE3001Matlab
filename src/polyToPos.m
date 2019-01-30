@@ -8,7 +8,7 @@ function q = polyToPos(a, t)
     a2 = a(3);
     a3 = a(4);
     
-    q = a0 + a1*t + a2*(t^2) + a3*(t^3);
+    q = (a0 + a1*t + a2*(t^2) + a3*(t^3))*(2*pi/4096);
     q;
     
 end
