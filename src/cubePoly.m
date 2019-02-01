@@ -1,3 +1,14 @@
+% Cubic Polynomial Function
+% cubePoly does the cubic polynomial of the arm
+% Parameters: takes in 6 varaibles
+% t0 - Initial time
+% tf - Final time
+% v0 - Initial Velocity
+% vf - Final Velocity
+% q0, qf - Not sure what these are
+% returns the cubic polynomial matrix
+
+
 function T = cubePoly(t0, tf, v0, vf, q0, qf)
     
     %Variables in a Cubic Polynomial
