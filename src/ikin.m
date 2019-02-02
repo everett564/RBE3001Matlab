@@ -22,13 +22,13 @@ try
     beta = acos((L2^2 + n^2 + (z-L1)^2 -L3^2)/(2*L2*sqrt(n^2 + (z-L1)^2)));
     
     elbowTheta = alpha + beta;
-    wristTheta = acos(-1*(L2^2 + L3^2 -(n^2 + (z-L1)^2))/(2*L2*L3)) - pi/2;
-    shoulderTheta = atan2(y,x);
+    wristTheta = -1*(acos(-1*(L2^2 + L3^2 -(n^2 + (z-L1)^2))/(2*L2*L3)) - pi/2);
+    shoulderTheta = -1*atan2(y,x);
     
     % Bounds
-    if (shoulderTheta < -.92)||(shoulderTheta > .92)||(elbowTheta > 1.53)||(elbowTheta < -.09)||(wristTheta < -.314)||(wristTheta > .92)
-        throw(exception)
-    end
+%     if (shoulderTheta < -.92)||(shoulderTheta > .92)||(elbowTheta > 1.53)||(elbowTheta < -.09)||(wristTheta < -.314)||(wristTheta > .92)
+%        throw(exception)
+%     end
     
     % Return matrix
     T = [shoulderTheta, elbowTheta, wristTheta];

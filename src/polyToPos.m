@@ -14,7 +14,7 @@ function q = polyToPos(a, t)
     a3 = a(4);
     
     % Formula
-    q = (a0 + a1*t + a2*(t^2) + a3*(t^3))*(2*pi/4096);
+    q = (a0 + a1*t + a2*(t^2) + a3*(t^3))*(4096/(2*pi));
     q;
     
 end
