@@ -5,7 +5,7 @@
 % tf - Final time
 % v0 - Initial Velocity
 % vf - Final Velocity
-% q0, qf - Not sure what these are
+% q0, qf - Positions
 % returns the cubic polynomial matrix
 
 

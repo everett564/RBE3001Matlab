@@ -1,6 +1,4 @@
-%%
-% RBE3001 - Laboratory 3
-%
+%% RBE3001 - Laboratory 3 %%
 
 %% Initializations:
 clear
@@ -42,10 +40,13 @@ zlabel('Position (Encoder Ticks)')
 setpts = [];
 xAxis = [];
 TipPos = [];
+sample = [];
 elap = [];
 elapsedTime = 0;
 
+%%
 try
+%% Initialized Server Values    
     SERV_ID = 01;
     SERV_ID_READ = 03; % we will be talking to server ID 37 on
     SERV_ID_PID = 04;  % the Nucleo
@@ -56,9 +57,6 @@ try
     %   returnPacket2 = pp.read(SERV_ID_READ);
     %   homePos = [];
     %   homePos(1,1:3) = returnPacket2(1:3,1);
-    
-    
-   
 %% Initialization of the PID values
     
     %Shoulder
@@ -75,10 +73,10 @@ try
     Kp_Wrist=.0006;
     Ki_Wrist=.0025;
     Kd_Wrist=.05;
-%%    
+%% Packet PID Value Initialization
     
     % Debug Statement (Leave for debugging)
-    DEBUG   = true;          % enables/disables debug prints
+    % DEBUG   = true;          % enables/disables debug prints
     
     % Instantiate a packet - the following instruction allocates 64
     % bytes for this purpose. Recall that the HID interface supports
@@ -114,23 +112,75 @@ try
     %shoulder = [0, 324, -18, -404, -295, 0];
     %elbow = [0, 133.3, -75, -14, 44, 0];
     %wrist = [0, 221, 386, 79, 129, 0];
-    
 %% Cubic Polynomials
 
     inversePoint1 = ikin([225,0,100]);
     inversePoint2 = ikin([275,100,125]);
+    inversePoint3 = ikin([275,100,125]);
     
-    shoulderPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(1));
-    elbowPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(2));
-    wristPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(3));
+    invArray = [ [0,0,0], inversePoint1, inversePoint2, inversePoint3, [0,0,0]];
+    shoulderPoly = [];
+    elbowPoly = [];
+    wristPoly = [];
     
-    shoulderPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(1), inversePoint2(1));
-    elbowPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(2), inversePoint2(2));
-    wristPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(3), inversePoint2(3));
+    for point = 1:3:numel(invArray)
+        if(point < numel(invArray) -3)
+        shoulderPoly = [shoulderPoly;cubePoly(point, point+4, 0, 0, invArray(point), invArray(point+3))'];
+        elbowPoly = [elbowPoly; cubePoly(point, point+4, 0, 0, invArray(point+1), invArray(point+4))'];
+        wristPoly = [wristPoly; cubePoly(point, point+4, 0, 0, invArray(point+2), invArray(point+5))'];
+        
+        
+        else
+        shoulderPoly = [shoulderPoly;cubePoly(point, point+4, 0, 0, invArray(point), 0)'];
+        elbowPoly = [elbowPoly; cubePoly(point, point+4, 0, 0, invArray(point+1), 0)'];
+        wristPoly = [wristPoly; cubePoly(point, point+4, 0, 0, invArray(point+2), 0)'];
+        end
+
+            shoulderPose(1)=0;
+            elbowPose(1) = 0;
+            wristPose(1) = 0;
+    end
+    for i=1:30
+        t = (i-1)*.4 +1;
+        a = 1;
+        if(mod(i,10) == 0)
+        a = a+1;    
+        end
+        elbowPose(i+1) = polyToPos(elbowPoly(a,:), t);
+        wristPose(i+1) = polyToPos(wristPoly(a,:), t);
+        shoulderPose(i+1) = polyToPos(shoulderPoly(a,:), t);
+    end
     
-    shoulderPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(1), 0);    
-    elbowPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(2), 0);
-    wristPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(3), 0);
+%     for j=1:10
+%         t = (j-1)*.4 +9;
+%         elbowPose(j+11) = polyToPos(elbowPoly(2,:), t);
+%         wristPose(j+11) = polyToPos(wristPoly(2,:), t);
+%         shoulderPose(j+11) = polyToPos(shoulderPoly(2,:), t);
+%     end
+%      
+%      for k=1:10
+%          
+%         t = (k-1)*.4 +15;
+%         elbowPose(k+21) = polyToPos(elbowPoly(3,:), t);
+%         wristPose(k+21) = polyToPos(wristPoly(3,:), t);
+%         shoulderPose(k+21) = polyToPos(shoulderPoly(3,:), t);
+%      end
+
+    elbowPose(32) = 0;
+    wristPose(32) = 0;
+    shoulderPose(32) = 0;
+    
+%     shoulderPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(1));
+%     elbowPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(2));
+%     wristPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(3));
+%     
+%     shoulderPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(1), inversePoint2(1));
+%     elbowPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(2), inversePoint2(2));
+%     wristPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(3), inversePoint2(3));
+%     
+%     shoulderPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(1), 0);    
+%     elbowPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(2), 0);
+%     wristPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(3), 0);
 %     elbowPoly1 = cubePoly(1, 5, 0, 0, 7.55, 55.02);
 %     wristPoly1 = cubePoly(1, 5, 0, 0, -254.75, 302.5);
 %     
@@ -139,37 +189,8 @@ try
 %     
 %    elbowPoly3 = cubePoly(9, 13, 0, 0, 580, 7.55);
 %   wristPoly3 = cubePoly(9, 13, 0, 0, -254.75, -254.75);
-    shoulderPoly(1)=0;
-    elbowPose(1) = 0;
-    wristPose(1) = 0;
+
     
-    for i=1:10
-        t = (i-1)*.4 +1;
-        elbowPose(i+1) = polyToPos(elbowPoly1, t);
-        wristPose(i+1) = polyToPos(wristPoly1, t);
-        shoulderPose(i+1) = polyToPos(shoulderPoly1, t);
-    end
-    
-    for j=1:10
-        t = (j-1)*.4 +9;
-        elbowPose(j+11) = polyToPos(elbowPoly2, t);
-        wristPose(j+11) = polyToPos(wristPoly2, t);
-        shoulderPose(j+11) = polyToPos(shoulderPoly2, t);
-    end
-%     
-     for k=1:10
-         
-        t = (k-1)*.4 +15;
-        elbowPose(k+21) = polyToPos(elbowPoly3, t);
-        wristPose(k+21) = polyToPos(wristPoly3, t);
-        shoulderPose(k+21) = polyToPos(shoulderPoly3, t);
-     end
-%     
-    
-    %
-    elbowPose(32) = 0;
-    wristPose(32) = 0;
-    shoulderPose(32)=0;
     
 %%
     %Set Array of Values (In Encoder Ticks)
@@ -181,10 +202,7 @@ try
     ret = [];
     ret2 = [];
     ret3 = [];
-    
 
-    
-    
     %for tea = 1:length(shoulder)
     i=1;
     tea=1;
@@ -209,7 +227,7 @@ try
             pp.write(SERV_ID, packet);
             counter = 0;
         end
-        pause(0.003); % Minimum amount of time required between write and read
+        %pause(0.003); % Minimum amount of time required between write and read
         
         %pp.read reads a returned 15 float backet from the nucleo.
         pp.write(SERV_ID_READ, zeros(15,1,'single'));
@@ -218,13 +236,14 @@ try
         %timerVal = tic;
         elapsedTime = toc(timerVal);
         
-        plotDaArm(returnPacket(1:3))
+        %plotDaArm(returnPacket(1:3))
         TipVals = plotDaArm(returnPacket(1:3));
         elap = [elap; elapsedTime];
         TipPos = [TipPos; TipVals'];
         csvwrite('Tip Position', TipPos);
         
         setpts = [setpts; returnPacket(1:3)'];
+        sample = diff(elap);
         csvwrite('Set Points', setpts);
         
         ret = [ret;returnPacket(1)];
@@ -316,7 +335,7 @@ jvel1 = diff(shoulderPos)/diff(elap);
 jvel2 = diff(elbowPos)/diff(elap);
 jvel3 = diff(wristPos)/diff(elap);
 
-% Figure 1: Tip Time
+%% Figure 1: Tip Time
 % Tip Position in time of all of the variables
 figure('Name', 'Tip Time', 'NumberTitle', 'off')
 hold on;
@@ -329,7 +348,7 @@ xlabel('Time (Seconds)')
 ylabel('Position (Encoder Ticks)')
 legend('x-Position', 'y-Position', 'z-Position')
 
-% Figure 2: Tip Position
+%% Figure 2: Tip Position
 % x and y coordinates of the tip
 figure('Name', 'Tip Position', 'NumberTitle', 'off')
 hold on;
@@ -346,7 +365,7 @@ title(' Tip Position')
 xlabel('Position (Encoder Ticks)')
 ylabel('Position (Encoder Ticks)')
 
-% Figure 3: Joint Position
+%% Figure 3: Joint Position
 % Graphs joint positions vs time
 figure('Name', 'Joint Postition', 'NumberTitle', 'off')
 hold on;
@@ -359,7 +378,7 @@ xlabel('Time (Seconds)')
 ylabel('Position (Encoder Ticks)')
 legend('Shoulder Position', 'Elbow Position', 'Wrist Position')
 
-% Figure 4: Joint Velocity
+%% Figure 4: Joint Velocity
 % Graphs the velocity of all of the joints
 figure('Name', 'Joint Velocity', 'NumberTitle', 'off')
 hold on;
