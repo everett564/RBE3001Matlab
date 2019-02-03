@@ -342,6 +342,16 @@ xTip = TipPos(:,1);
 yTip = TipPos(:,2);
 zTip = TipPos(:,3);
 
+% Getting the values for Tip Velocity
+xVel = diff(xTip)/diff(elap);
+yVel = diff(yTip)/diff(elap);
+zVel = diff(zTip)/diff(elap);
+
+% Getting the values for Tip Acceleration
+xAcc = diff(xVel(:,1))/diff(elap(1:end));
+yAcc = diff(yVel(:,1))/diff(elap(1:end));
+zAcc = diff(zVel(:,1))/diff(elap(1:end));
+
 % Getting the values for the encoder values of all of the joints
 shoulderPos = setpts(:,1);
 elbowPos = setpts(:,2);
@@ -351,6 +361,7 @@ wristPos = setpts(:,3);
 jvel1 = diff(shoulderPos)/diff(elap);
 jvel2 = diff(elbowPos)/diff(elap);
 jvel3 = diff(wristPos)/diff(elap);
+
 
 %% Figure 1: Tip Time
 % Tip Position in time of all of the variables
@@ -362,7 +373,7 @@ plot(elap,yTip);
 hold off;
 title('Tip Time')
 xlabel('Time (Seconds)')
-ylabel('Position (Encoder Ticks)')
+ylabel('Position (mm)')
 legend('x-Position', 'y-Position', 'z-Position')
 
 %% Figure 2: Tip Position
@@ -413,6 +424,32 @@ legend('Shoulder Velocity', 'Elbow Velocity', 'Wrist Velocity')
 %  csvwrite('Plot File Shoulder', ret);
 %  csvwrite('Plot File Elbow', retE);
 %  csvwrite('Plot File Wrist', retW);
+
+%% Figure 5: Tip Velocity
+% Tip Velocity in time of all of the variables
+figure('Name', 'Tip Velocity', 'NumberTitle', 'off')
+hold on;
+plot(elap(2:end),xVel);
+plot(elap(2:end),yVel);
+plot(elap(2:end),zVel);
+hold off;
+title('Tip Velocity')
+xlabel('Time (Seconds)')
+ylabel('Velocity (mm/s)')
+legend('x-Velocity', 'y-Velocity', 'z-Velocity')
+
+%% Figure 6: Tip Accelerations
+% Tip Accelerations in time of all of the variables
+figure('Name', 'Tip Accelerations', 'NumberTitle', 'off')
+hold on;
+plot(elap(3:end),xAcc);
+plot(elap(3:end),yAcc);
+plot(elap(3:end),zAcc);
+hold off;
+title('Tip Accelerations')
+xlabel('Time (Seconds)')
+ylabel('Acceleration (mm/second^2)')
+legend('x-Accelation', 'y-Accelation', 'z-Accelation')
 
 pp.shutdown()
 
