@@ -23,7 +23,7 @@ myHIDSimplePacketComs.setPid(pid);
 myHIDSimplePacketComs.setVid(vid);
 myHIDSimplePacketComs.connect();
 
-%%
+%% Initializations for Graphing
 
 % Create a PacketProcessor object to send data to the nucleo firmware
 pp = PacketProcessor(myHIDSimplePacketComs);
@@ -36,7 +36,7 @@ xlabel('Position (Encoder Ticks)')
 ylabel('Position (Encoder Ticks)')
 zlabel('Position (Encoder Ticks)')
 
-%Initialization of Variables Used:
+%% Initialization of Variables Used
 setpts = [];
 xAxis = [];
 TipPos = [];
@@ -46,6 +46,7 @@ elapsedTime = 0;
 
 %%
 try
+    
 %% Initialized Server Values    
     SERV_ID = 01;
     SERV_ID_READ = 03; % we will be talking to server ID 37 on
@@ -57,6 +58,7 @@ try
     %   returnPacket2 = pp.read(SERV_ID_READ);
     %   homePos = [];
     %   homePos(1,1:3) = returnPacket2(1:3,1);
+    
 %% Initialization of the PID values
     
     %Shoulder
@@ -73,33 +75,37 @@ try
     Kp_Wrist=.0006;
     Ki_Wrist=.0025;
     Kd_Wrist=.05;
+    
 %% Packet PID Value Initialization
     
     % Debug Statement (Leave for debugging)
     % DEBUG   = true;          % enables/disables debug prints
+    % Diabled as part of lab 3
     
     % Instantiate a packet - the following instruction allocates 64
     % bytes for this purpose. Recall that the HID interface supports
-    % packet sizes up to 64 bytes. (CONSIDER MAKING TO A FUNCTION)
+    % packet sizes up to 64 bytes. 
     packet = zeros(15, 1, 'single');
     
+    % Shoulder
     packet(1) = Kp_Shoulder;
     packet(2) = Ki_Shoulder;
     packet(3) = Kd_Shoulder;
     
+    % Elbow
     packet(4) = Kp_Elbow;
     packet(5) = Ki_Elbow;
     packet(6) = Kd_Elbow;
     
+    % Wrist
     packet(7) = Kp_Wrist;
     packet(8) = Ki_Wrist;
     packet(9) = Kd_Wrist;
-    %
+    
     %   packet(11) = 1;
     %   packet(12) = homePos(1);
     %   packet(13) = homePos(2);
     %   packet(14) = homePos(3);
-    %
     
     pp.write(SERV_ID_PID,packet);
     pause(.003);
@@ -109,9 +115,10 @@ try
     % The following code generates a sinusoidal trajectory to be
     % executed on joint 1 of the arm and iteratively sends the list of
     % setpoints to the Nucleo firmware.
-    %shoulder = [0, 324, -18, -404, -295, 0];
-    %elbow = [0, 133.3, -75, -14, 44, 0];
-    %wrist = [0, 221, 386, 79, 129, 0];
+    % These points have not been used in a while
+    % shoulder = [0, 324, -18, -404, -295, 0];
+    % elbow = [0, 133.3, -75, -14, 44, 0];
+    % wrist = [0, 221, 386, 79, 129, 0];
 %% Cubic Polynomials
 
    
@@ -127,46 +134,54 @@ try
 %     elbowPose(1) = 0;
 %     wristPose(1) = 0;
 
-
+    % Inverse Points Initialization
     inversePoint1 = ikin([225,0,100]);
     inversePoint2 = ikin([275,100,125]);
     inversePoint3 = ikin([275,-100,125]);
     inversePoint3 = ikin([175,0,-34.38]);
 
-    
-    invArray =  [
-        inversePoint1;
-        inversePoint2; 
-        inversePoint3;
-        0,0,0];
+    % Array of the Inverse Points
+    invArray =  [inversePoint1;
+                 inversePoint2; 
+                 inversePoint3;
+                 0,0,0];
+             
+    % Joint Polynomial Matrices  
     shoulderPoly = [];
     elbowPoly = [];
     wristPoly = [];
-    
     invArray = [zeros(1,3);invArray]
+    
+    % For loop that initializes the Cubic Polynomials
     for point = 2:size(invArray,1)
+        
         shoulderPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,1), invArray(point,1))';
         elbowPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,2), invArray(point,2))';
         wristPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,3), invArray(point,2))';
     
+        % For loop that initializes the Poses of the Robots Trajectory
         for j=1:10
             t = (j-1)*.4 +(1+4*(point-1));
+            
             elbowPose(j+1 +10*(point-2)) = polyToPos(elbowPoly, t);
             wristPose(j+1 +10*(point-2)) = polyToPos(wristPoly, t);
             shoulderPose(j+1+10*(point-2)) = polyToPos(shoulderPoly, t);
         end
     
-    
-    
-    
-    
-    
     end
 
+    % Initialized first points (I THINK)
     shoulderPose(1)=0;
     elbowPose(1) = 0;
     wristPose(1) = 0;
-    end
+    
+end
+    % Initializes final points
+    elbowPose(32) = 0;
+    wristPose(32) = 0;
+    shoulderPose(32) = 0;
+
+%% THIS IS FROM ONE OF THE FIRST STEPS (REMOVE AFTER LAB IS DONE)
 %     for i=1:30
 %         a = 1;
 %         t = (i-1)*.4 +1;
@@ -194,9 +209,7 @@ try
 %         shoulderPose(k+21) = polyToPos(shoulderPoly(3,:), t);
 %      end
 
-    elbowPose(32) = 0;
-    wristPose(32) = 0;
-    shoulderPose(32) = 0;
+   
     
 %     shoulderPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(1));
 %     elbowPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(2));
@@ -209,55 +222,57 @@ try
 %     shoulderPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(1), 0);    
 %     elbowPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(2), 0);
 %     wristPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(3), 0);
-
-
-    
-    
-%%
-    %Set Array of Values (In Encoder Ticks)
+%% Initializations for while loop
+    %Set Array of Values (In Encoder Ticks, I think, do not think these are
+    %used)
     shoulder = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     elbow = [0, 0, 7.55, 55.02, 580, 100, 100,100,100,100];
     wrist = [0, 0, -240, 302.5,-240, 0,0,0,0,0];
     
-    %Initailized Return Matrices
+    % Initailized Return Matrices
     ret = [];
     ret2 = [];
     ret3 = [];
 
-    %for tea = 1:length(shoulder)
+    % for tea = 1:length(shoulder) (this has been here for a while,
+    % consider deleting)
     i=1;
     tea=1;
     tic
     timerVal = tic;
     counter = 0;
+%% While Loop 
     while tea<=32
         
         counterVal = tic;
-        %incremtal = (single(k) / sinWaveInc);
+        %incremtal = (single(k) / sinWaveInc); (what is this)
         
         viaPts = zeros(1, 100);
         % Send packet to the server and get the response
         
         %pp.write sends a 15 float packet to the micro controller
         if counter>=0.4
+            
             packet = zeros(15, 1, 'single');
-            packet(1) = shoulderPose(tea); % shoulder is in encoder ticks
-            packet(2) = elbowPose(tea);
-            packet(3) = wristPose(tea);
+            packet(1) = shoulderPose(tea); 
+            packet(2) = elbowPose(tea);    
+            packet(3) = wristPose(tea);    
             tea=tea+1;
             pp.write(SERV_ID, packet);
             counter = 0;
+            
         end
         %pause(0.003); % Minimum amount of time required between write and read
         
-        %pp.read reads a returned 15 float backet from the nucleo.
+        
         pp.write(SERV_ID_READ, zeros(15,1,'single'));
+        
         pause(0.003);
-        returnPacket = pp.read(SERV_ID_READ);
-        %timerVal = tic;
+        
+        returnPacket = pp.read(SERV_ID_READ); %pp.read reads a returned 15 float backet from the nucleo.
+        %timerVal = tic; Probably remove this line 
         elapsedTime = toc(timerVal);
         
-        %plotDaArm(returnPacket(1:3))
         TipVals = plotDaArm(returnPacket(1:3));
         elap = [elap; elapsedTime];
         TipPos = [TipPos; TipVals'];
@@ -267,25 +282,17 @@ try
         sample = diff(elap);
         csvwrite('Set Points', setpts);
         
+        % Return Packet Initializations
         ret = [ret;returnPacket(1)];
         ret2 = [ret2;returnPacket(2)];
         ret3 = [ret3;returnPacket(3)];
         
-        
         counter = toc(counterVal)+counter
         
-        % xAxis = [xAxis;i];
+        % Incrementation of i
         i= i+1;
-        % xAxis(i,1) = i;
-        % set(figure, 'Xdata', xAxis');
-        % set(figure, 'Ydata', ret);
-        %drawnowap = [elap; el0; apsedtime];
-        %set(figure, 'Ydata', ret2);
-        %plot(x(1:i),ret(1:i))
         
-        %drawnow
-        
-        
+%% Debug stuff
 %         if DEBUG
 %             disp('Sent Packet:');
 %             disp(packet);
@@ -298,23 +305,26 @@ try
 %             packet((x*3)+2)=0;
 %             packet((x*3)+3)=0;
 %         end
-        
-        %This version will send the command once per call of pp.write
-        %pp.write(02, packet);
-        %pause(0.003);
-        %returnPacket2=  pp.read(02);
-        %this version will start an auto-polling server and read back the
-        %current data
-        %returnPacket2=  pp.command(65, packet);
-        
+%         
+%         This version will send the command once per call of pp.write
+%         pp.write(02, packet);
+%         pause(0.003);
+%         returnPacket2=  pp.read(02);
+%         this version will start an auto-polling server and read back the
+%         current data
+%         returnPacket2=  pp.command(65, packet);
+%         
 %         if DEBUG
 %             %disp('Received Packet 2:');
 %             %disp(returnPacket2);
 %         end
+%%
         toc
         pause(.003); %timeit(returnPacket) !FIXME why is this needed?
         
     end
+
+% Time Matrix
 csvwrite('Time', elap);
 
 % retAvg=sum(ret(1:10))/10;
@@ -334,8 +344,11 @@ csvwrite('Time', elap);
 %  plot(retE);
 %  plot(retW);
 
+%% Clear Statements for the Graphs
 clear title xlabel ylabel
 close all
+
+%% Tip Values Declarations
 
 % Getting values of Tip Position
 xTip = TipPos(:,1);
@@ -352,7 +365,10 @@ xAcc = diff(xVel(:,1))/diff(elap(1:end));
 yAcc = diff(yVel(:,1))/diff(elap(1:end));
 zAcc = diff(zVel(:,1))/diff(elap(1:end));
 
+%% Joint Values Declarations
+
 % Getting the values for the encoder values of all of the joints
+% Joint Positions
 shoulderPos = setpts(:,1);
 elbowPos = setpts(:,2);
 wristPos = setpts(:,3);
@@ -362,38 +378,23 @@ jvel1 = diff(shoulderPos)/diff(elap);
 jvel2 = diff(elbowPos)/diff(elap);
 jvel3 = diff(wristPos)/diff(elap);
 
-
-%% Figure 1: Tip Time
-% Tip Position in time of all of the variables
-figure('Name', 'Tip Time', 'NumberTitle', 'off')
+%% Figure 1: X and Y Tip Position
+% x and y coordinates of the tip plot
+figure('Name', 'Tip Position in x and y plane', 'NumberTitle', 'off')
 hold on;
-plot(elap,xTip);
-plot(elap,zTip);
-plot(elap,yTip);
-hold off;
-title('Tip Time')
-xlabel('Time (Seconds)')
-ylabel('Position (mm)')
-legend('x-Position', 'y-Position', 'z-Position')
 
-%% Figure 2: Tip Position
-% x and y coordinates of the tip
-figure('Name', 'Tip Position', 'NumberTitle', 'off')
-hold on;
+% Plot Function
 plot(xTip, zTip, '-o');
-% plot(191.2566,122.9888, 'ro');
-% plot(112.3549,-20.2409, 'ro');
-% plot(262.5972,5.2783, 'ro');
-plot(225,100, 'ro');        %225 120 100
-plot(175,-34.28, 'ro');        %100 -120 50
-
+% Plotting of the dots
+plot(225,100, 'ro');           
+plot(175,-34.28, 'ro');
 
 hold off;
 title(' Tip Position')
 xlabel('Position (Encoder Ticks)')
 ylabel('Position (Encoder Ticks)')
 
-%% Figure 3: Joint Position
+%% Figure 2: Joint Position
 % Graphs joint positions vs time
 figure('Name', 'Joint Postition', 'NumberTitle', 'off')
 hold on;
@@ -406,7 +407,7 @@ xlabel('Time (Seconds)')
 ylabel('Position (Encoder Ticks)')
 legend('Shoulder Position', 'Elbow Position', 'Wrist Position')
 
-%% Figure 4: Joint Velocity
+%% Figure 3: Joint Velocity
 % Graphs the velocity of all of the joints
 figure('Name', 'Joint Velocity', 'NumberTitle', 'off')
 hold on;
@@ -419,11 +420,18 @@ xlabel('Time (Seconds)')
 ylabel('Velocity (Encoder Ticks/Second')
 legend('Shoulder Velocity', 'Elbow Velocity', 'Wrist Velocity')
 
-%  Files Unused at the moment
-%  csvwrite('Return File', rep);
-%  csvwrite('Plot File Shoulder', ret);
-%  csvwrite('Plot File Elbow', retE);
-%  csvwrite('Plot File Wrist', retW);
+%% Figure 4: Tip Position
+% Tip Position in time of all of the variables
+figure('Name', 'Tip Time', 'NumberTitle', 'off')
+hold on;
+plot(elap,xTip);
+plot(elap,zTip);
+plot(elap,yTip);
+hold off;
+title('Tip Time')
+xlabel('Time (Seconds)')
+ylabel('Position (mm)')
+legend('x-Position', 'y-Position', 'z-Position')
 
 %% Figure 5: Tip Velocity
 % Tip Velocity in time of all of the variables
@@ -450,6 +458,12 @@ title('Tip Accelerations')
 xlabel('Time (Seconds)')
 ylabel('Acceleration (mm/second^2)')
 legend('x-Accelation', 'y-Accelation', 'z-Accelation')
+
+%%  CSV File Statements
+%  csvwrite('Return File', rep);
+%  csvwrite('Plot File Shoulder', ret);
+%  csvwrite('Plot File Elbow', retE);
+%  csvwrite('Plot File Wrist', retW);
 
 pp.shutdown()
 

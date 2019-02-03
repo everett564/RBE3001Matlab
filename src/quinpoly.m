@@ -9,6 +9,7 @@
 % af - Final Acceleration
 % q0, qf - Positions
 % returns the cubic polynomial matrix
+
 function T = quinpoly(t0, tf, v0, vf, a0, af, q0, qf)
     
     %Variables in a Quintic Polynomial

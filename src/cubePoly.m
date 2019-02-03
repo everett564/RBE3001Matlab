@@ -8,7 +8,6 @@
 % q0, qf - Positions
 % returns the cubic polynomial matrix
 
-
 function T = cubePoly(t0, tf, v0, vf, q0, qf)
     
     %Variables in a Cubic Polynomial
