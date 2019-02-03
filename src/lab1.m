@@ -130,7 +130,8 @@ try
 
     inversePoint1 = ikin([225,0,100]);
     inversePoint2 = ikin([275,100,125]);
-    inversePoint3 = ikin([275,100,125]);
+    inversePoint3 = ikin([275,-100,125]);
+    inversePoint3 = ikin([175,0,-34.38]);
 
     
     invArray =  [
@@ -144,25 +145,39 @@ try
     
     invArray = [zeros(1,3);invArray]
     for point = 2:size(invArray,1)
-        shoulderPoly = [shoulderPoly;cubePoly(point*2, point*2+4, 0, 0, invArray(point-1,1), invArray(point,1))'];
-        elbowPoly = [elbowPoly; cubePoly(point*2, point*2+4, 0, 0, invArray(point-1,2), invArray(point,2))'];
-        wristPoly = [wristPoly; cubePoly(point*2, point*2+4, 0, 0, invArray(point-1,3), invArray(point,2))'];
+        shoulderPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,1), invArray(point,1))';
+        elbowPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,2), invArray(point,2))';
+        wristPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,3), invArray(point,2))';
+    
+        for j=1:10
+            t = (j-1)*.4 +(1+4*(point-1));
+            elbowPose(j+1 +10*(point-2)) = polyToPos(elbowPoly, t);
+            wristPose(j+1 +10*(point-2)) = polyToPos(wristPoly, t);
+            shoulderPose(j+1+10*(point-2)) = polyToPos(shoulderPoly, t);
+        end
+    
+    
+    
+    
+    
+    
     end
 
     shoulderPose(1)=0;
     elbowPose(1) = 0;
     wristPose(1) = 0;
     end
-    for i=1:30
-        t = (i-1)*.4 +1;
-        a = 1;
-        if(mod(i,10) == 0)
-        a = a+1;    
-        end
-        elbowPose(i+1) = polyToPos(elbowPoly(a,:), t);
-        wristPose(i+1) = polyToPos(wristPoly(a,:), t);
-        shoulderPose(i+1) = polyToPos(shoulderPoly(a,:), t);
-    end
+%     for i=1:30
+%         a = 1;
+%         t = (i-1)*.4 +1;
+%         
+%         if(mod(i,10) == 0)
+%         a = a+1;    
+%         end
+%         elbowPose(i+1) = polyToPos(elbowPoly(a,:), t);
+%         wristPose(i+1) = polyToPos(wristPoly(a,:), t);
+%         shoulderPose(i+1) = polyToPos(shoulderPoly(a,:), t);
+%     end
     
 %     for j=1:10
 %         t = (j-1)*.4 +9;

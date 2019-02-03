@@ -144,9 +144,22 @@ try
     
     invArray = [zeros(1,3);invArray]
     for point = 2:size(invArray,1)
-        shoulderPoly = [shoulderPoly;cubePoly(point, point+4, 0, 0, invArray(point-1,1), invArray(point,1))'];
-        elbowPoly = [elbowPoly; cubePoly(point, point+4, 0, 0, invArray(point-1,2), invArray(point,2))'];
-        wristPoly = [wristPoly; cubePoly(point, point+4, 0, 0, invArray(point-1,3), invArray(point,2))'];
+        shoulderPoly = [shoulderPoly;cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,1), invArray(point,1))'];
+        elbowPoly = [elbowPoly; cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,2), invArray(point,2))'];
+        wristPoly = [wristPoly; cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,3), invArray(point,2))'];
+    
+        for j=1:10
+            t = (j-1)*.4 +(1+4*(point-1));
+            elbowPose(j+1 +10*(point-2)) = polyToPos(elbowPoly(2,:), t);
+            wristPose(j+1 +10*(point-2)) = polyToPos(wristPoly(2,:), t);
+            shoulderPose(j+1+10*(point-2)) = polyToPos(shoulderPoly(2,:), t);
+        end
+    
+    
+    
+    
+    
+    
     end
 
     shoulderPose(1)=0;
@@ -154,8 +167,9 @@ try
     wristPose(1) = 0;
     end
     for i=1:30
-        t = (i-1)*.4 +1;
         a = 1;
+        t = (i-1)*.4 +1;
+        
         if(mod(i,10) == 0)
         a = a+1;    
         end
