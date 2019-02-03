@@ -116,6 +116,7 @@ try
     %wrist = [0, 221, 386, 79, 129, 0];
     
 %% Cubic Polynomials
+   
     elbowPoly1 = cubePoly(1, 5, 0, 0, 7.55, 55.02);
     wristPoly1 = cubePoly(1, 5, 0, 0, -254.75, 302.5);
     
