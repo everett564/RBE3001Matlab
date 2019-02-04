@@ -43,6 +43,7 @@ TipPos = [];
 sample = [];
 elap = [];
 elapsedTime = 0;
+runTime = 128;
 
 %%
 try
@@ -61,39 +62,27 @@ try
     
 %% Initialization of the PID values
    
-%     %Shoulder
-%     Kp_Shoulder=.001;
-%     Ki_Shoulder=.001;
-%     Kd_Shoulder=0.02;
-%     
-%     %Elbow
-%     Kp_Elbow=.0015;
-%     Ki_Elbow=.0025;
-%     Kd_Elbow=.075;
-%     
-%     %Wrist
-%     Kp_Wrist=.0006;
-%     Ki_Wrist=.0025;
-%     Kd_Wrist=.05;
+    %Shoulder
+    Kp_Shoulder=.001;
+    Ki_Shoulder=.001;
+    Kd_Shoulder=0.02;
+    
+    %Elbow
+    Kp_Elbow=.0015;
+    Ki_Elbow=.0025;
+    Kd_Elbow=.075;
+    
+    %Wrist
+    Kp_Wrist=.0006;
+    Ki_Wrist=.0025;
+    Kd_Wrist=.05;
 
     
     % HAD TO CHANGE THESE VALUES WHEN BORROWED OTHER ARM
     % BELOW VALUES ARE NOT CORRECT FOR OUR ARM, DELETE WHEN ARM WORKS AGAIN
 
     %Shoulder
-    Kp_Shoulder=.003;
-    Ki_Shoulder=0;
-    Kd_Shoulder=0;
-    
-    %Elbow
-    Kp_Elbow=.003;
-    Ki_Elbow=0;
-    Kd_Elbow=.03;
-    
-    %Wrist
-    Kp_Wrist=.003;
-    Ki_Wrist=0;
-    Kd_Wrist=.01;  
+
     
     
     
@@ -156,15 +145,25 @@ try
 %     wristPose(1) = 0;
 
     % Inverse Points Initialization
-    inversePoint1 = ikin([225,0,100]);
-    inversePoint2 = ikin([275,100,125]);
-    inversePoint3 = ikin([275,-100,125]);
-    inversePoint3 = ikin([175,0,-34.38]);
+    inversePoint1 = ikin([225,50,0]);
+    inversePoint2 = ikin([225,-50,0]);
+    inversePoint3 = ikin([175,-50,0]);
+    inversePoint4 = ikin([175,50,0]);
+    inversePoint5 = ikin([200,0,100]);
 
     % Array of the Inverse Points
     invArray =  [inversePoint1;
                  inversePoint2; 
                  inversePoint3;
+                 inversePoint4;
+                 inversePoint1;
+                 inversePoint5;
+                 inversePoint2;
+                 inversePoint5;
+                 inversePoint3;
+                 inversePoint5;
+                 inversePoint4;
+                 
                  0,0,0];
              
     % Joint Polynomial Matrices  
@@ -176,17 +175,17 @@ try
     % For loop that initializes the Cubic Polynomials
     for point = 2:size(invArray,1)
         
-        shoulderPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,1), invArray(point,1))';
-        elbowPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,2), invArray(point,2))';
-        wristPoly = cubePoly(1+4*(point-1), 5+4*(point-1), 0, 0, invArray(point-1,3), invArray(point,2))';
+        shoulderPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,1), invArray(point,1))';
+        elbowPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,2), invArray(point,2))';
+        wristPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,3), invArray(point,2))';
     
         % For loop that initializes the Poses of the Robots Trajectory
         for j=1:10
             t = (j-1)*.4 +(1+4*(point-1));
             
-            elbowPose(j+1 +10*(point-2)) = polyToPos(elbowPoly, t);
-            wristPose(j+1 +10*(point-2)) = polyToPos(wristPoly, t);
-            shoulderPose(j+1+10*(point-2)) = polyToPos(shoulderPoly, t);
+            elbowPose(j+1 +10*(point-2)) = quintPolyToPos(elbowPoly, t);
+            wristPose(j+1 +10*(point-2)) = quintPolyToPos(wristPoly, t);
+            shoulderPose(j+1+10*(point-2)) = quintPolyToPos(shoulderPoly, t);
         end
     
     end
@@ -227,9 +226,9 @@ try
     shoulderQuint(1) = 0;
 
     % Initializes final points
-    elbowQuint(42) = 0;
-    wristQuint(42) = 0;
-    shoulderQuint(42) = 0;
+    elbowQuint(runTime) = 0;
+    wristQuint(runTime) = 0;
+    shoulderQuint(runTime) = 0;
     
 end
 
@@ -296,7 +295,7 @@ end
     timerVal = tic;
     counter = 0;
 %% While Loop 
-    while tea<=42
+    while tea<=runTime
         
         counterVal = tic;
         %incremtal = (single(k) / sinWaveInc); (what is this)
@@ -437,21 +436,25 @@ jvel1 = diff(shoulderPos)/diff(elap);
 jvel2 = diff(elbowPos)/diff(elap);
 jvel3 = diff(wristPos)/diff(elap);
 
-%% Figure 1: X and Y Tip Position
+%% Figure 1: 3d Tip Position
 % x and y coordinates of the tip plot
-figure('Name', 'Tip Position in x and y plane', 'NumberTitle', 'off')
-hold on;
+figure('Name', 'Tip Position in xyz plane', 'NumberTitle', 'off')
+
+%hold on;
 
 % Plot Function
-plot(xTip, zTip, '-o');
+plot3(xTip(:,1),yTip(:,1), zTip(:,1), '-');
 % Plotting of the dots
-plot(225,100, 'ro');           
-plot(175,-34.28, 'ro');
-
-hold off;
+%plot(225,100, 'ro');           
+%plot(175,-34.28, 'ro');
+xlim([0,350])
+ylim([-200,200])
+zlim([-50,300]) 
+%hold off;
 title(' Tip Position')
-xlabel('Position (Encoder Ticks)')
-ylabel('Position (Encoder Ticks)')
+xlabel('mm')
+ylabel('mm')
+zlabel('mm')
 
 %% Figure 2: Joint Position
 % Graphs joint positions vs time
