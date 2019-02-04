@@ -1,6 +1,6 @@
 % Inverse Kinematics Function
 % ikin does the inverse kinematics of the position
-% Parameters: takes in a matrix of the x y and z in radians(i think)
+% Parameters: takes in a matrix of the x y and z in encoder ticks
 % returns the inverse kinematics matrix of the angles in radians
 
 function T = ikin(q)

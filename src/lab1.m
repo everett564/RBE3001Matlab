@@ -60,21 +60,42 @@ try
     %   homePos(1,1:3) = returnPacket2(1:3,1);
     
 %% Initialization of the PID values
+   
+%     %Shoulder
+%     Kp_Shoulder=.001;
+%     Ki_Shoulder=.001;
+%     Kd_Shoulder=0.02;
+%     
+%     %Elbow
+%     Kp_Elbow=.0015;
+%     Ki_Elbow=.0025;
+%     Kd_Elbow=.075;
+%     
+%     %Wrist
+%     Kp_Wrist=.0006;
+%     Ki_Wrist=.0025;
+%     Kd_Wrist=.05;
+
     
+    % HAD TO CHANGE THESE VALUES WHEN BORROWED OTHER ARM
+    % BELOW VALUES ARE NOT CORRECT FOR OUR ARM, DELETE WHEN ARM WORKS AGAIN
+
     %Shoulder
-    Kp_Shoulder=.001;
-    Ki_Shoulder=.001;
-    Kd_Shoulder=0.02;
+    Kp_Shoulder=.003;
+    Ki_Shoulder=0;
+    Kd_Shoulder=0;
     
     %Elbow
-    Kp_Elbow=.0015;
-    Ki_Elbow=.0025;
-    Kd_Elbow=.075;
+    Kp_Elbow=.003;
+    Ki_Elbow=0;
+    Kd_Elbow=.03;
     
     %Wrist
-    Kp_Wrist=.0006;
-    Ki_Wrist=.0025;
-    Kd_Wrist=.05;
+    Kp_Wrist=.003;
+    Ki_Wrist=0;
+    Kd_Wrist=.01;  
+    
+    
     
 %% Packet PID Value Initialization
     
@@ -170,16 +191,48 @@ try
     
     end
 
-    % Initialized first points (I THINK)
+    % Initialized first points
     shoulderPose(1)=0;
     elbowPose(1) = 0;
     wristPose(1) = 0;
+
+%% Quintic Polynomials
+    
+    % Joint Polynomial Matrices  
+    shoulderQuint = [];
+    elbowQuint = [];
+    wristQuint = [];
+             
+    % For loop that initializes the Quintic Polynomials
+    for point = 2:size(invArray,1)
+        
+        shoulderQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,1), invArray(point,1))';
+        elbowQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,2), invArray(point,2))';
+        wristQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,3), invArray(point,3))';
+    
+        % For loop that initializes the Poses of the Robots Trajectory
+        for j=1:10
+            t = (j-1)*.4 +(1+4*(point-1));
+            
+            elbowQuint(j+1 +10*(point-2)) = quintPolyToPos(elbowQPoly, t);
+            wristQuint(j+1 +10*(point-2)) = quintPolyToPos(wristQPoly, t);
+            shoulderQuint(j+1+10*(point-2)) = quintPolyToPos(shoulderQPoly, t);
+        end
+    
+    end
+    
+    % Initializes first points
+    elbowQuint(1) = 0;
+    wristQuint(1) = 0;
+    shoulderQuint(1) = 0;
+
+    % Initializes final points
+    elbowQuint(42) = 0;
+    wristQuint(42) = 0;
+    shoulderQuint(42) = 0;
     
 end
-    % Initializes final points
-    elbowPose(32) = 0;
-    wristPose(32) = 0;
-    shoulderPose(32) = 0;
+
 
 %% THIS IS FROM ONE OF THE FIRST STEPS (REMOVE AFTER LAB IS DONE)
 %     for i=1:30
@@ -234,6 +287,7 @@ end
     ret2 = [];
     ret3 = [];
 
+
     % for tea = 1:length(shoulder) (this has been here for a while,
     % consider deleting)
     i=1;
@@ -242,7 +296,7 @@ end
     timerVal = tic;
     counter = 0;
 %% While Loop 
-    while tea<=32
+    while tea<=42
         
         counterVal = tic;
         %incremtal = (single(k) / sinWaveInc); (what is this)
@@ -254,11 +308,16 @@ end
         if counter>=0.4
             
             packet = zeros(15, 1, 'single');
-            packet(1) = shoulderPose(tea); 
-            packet(2) = elbowPose(tea);    
-            packet(3) = wristPose(tea);    
+            packet(1) = shoulderQuint(tea); 
+            packet(2) = elbowQuint(tea);    
+            packet(3) = wristQuint(tea);
+            disp(shoulderQuint(tea));
+            disp(elbowQuint(tea));
+            disp(wristQuint(tea));
+            
             tea=tea+1;
             pp.write(SERV_ID, packet);
+            pause(0.003);
             counter = 0;
             
         end
