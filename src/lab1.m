@@ -78,13 +78,6 @@ try
     Kd_Wrist=.05;
 
     
-    % HAD TO CHANGE THESE VALUES WHEN BORROWED OTHER ARM
-    % BELOW VALUES ARE NOT CORRECT FOR OUR ARM, DELETE WHEN ARM WORKS AGAIN
-
-    %Shoulder
-
-    
-    
     
 %% Packet PID Value Initialization
     
@@ -144,27 +137,62 @@ try
 %     elbowPose(1) = 0;
 %     wristPose(1) = 0;
 
-    % Inverse Points Initialization
-    inversePoint1 = ikin([225,50,0]);
-    inversePoint2 = ikin([225,-50,0]);
-    inversePoint3 = ikin([175,-50,0]);
-    inversePoint4 = ikin([175,50,0]);
-    inversePoint5 = ikin([200,0,100]);
+%     % Inverse Points Initialization
+%     inversePoint1 = ikin([225,50,0]);
+%     inversePoint2 = ikin([225,-50,0]);
+%     inversePoint3 = ikin([175,-50,0]);
+%     inversePoint4 = ikin([175,50,0]);
+%     inversePoint5 = ikin([200,0,100]);
+%     
+% 
+%     % Array of the Inverse Points
+%     invArray =  [inversePoint1;
+%                  inversePoint2; 
+%                  inversePoint3;
+%                  inversePoint4;
+%                  inversePoint1;
+%                  inversePoint5;
+%                  inversePoint2;
+%                  inversePoint5;
+%                  inversePoint3;
+%                  inversePoint5;
+%                  inversePoint4;
+%                  0,0,0];
+             
+             
+    % Extra Credit:
+    
+    % Inverse Points
+    inversePoint1 = ikin([175,0,10]);
+    inversePoint2 = ikin([225,-50,20]);
+    inversePoint3 = ikin([275,0,30]);
+    inversePoint4 = ikin([225,50,40]);
+    
+    inversePoint5 = ikin([175,0,50]);
+    inversePoint6 = ikin([225,-50,60]);
+    inversePoint7 = ikin([275,0,70]);
+    inversePoint8 = ikin([225,50,80]);
+    
+    inversePoint9 = ikin([175,0,90]);
+    inversePoint10 = ikin([225,-50,100]);
+    inversePoint11 = ikin([275,0,110]);
+    inversePoint12 = ikin([225,50,120]);
+    
 
     % Array of the Inverse Points
     invArray =  [inversePoint1;
                  inversePoint2; 
                  inversePoint3;
                  inversePoint4;
-                 inversePoint1;
                  inversePoint5;
-                 inversePoint2;
-                 inversePoint5;
-                 inversePoint3;
-                 inversePoint5;
-                 inversePoint4;
-                 
+                 inversePoint6;
+                 inversePoint7;
+                 inversePoint8;
+                 inversePoint9;
+                 inversePoint10;
+                 inversePoint11;
                  0,0,0];
+    
              
     % Joint Polynomial Matrices  
     shoulderPoly = [];
