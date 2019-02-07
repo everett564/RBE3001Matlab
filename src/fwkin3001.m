@@ -6,57 +6,24 @@
 % t3 - the encoder value of the wrist
 % return: This function returns a matrix of three positions in radians
 
+
+%%% THIS FUNCTION NEEDS MODIFICATION TO BE MORE LIKE FWKINJACOB, And how it
+%%% returns things... 
+
 function [P1 P2 P3] = fwkin3001(t1,t2,t3)
-    
-    % Converts the encoder values from ticks to radians
-    t1 = -(t1*6.28)/4096; 
-    t2 =  (t2*6.28)/4096;
-    t3 =  (t3*6.28)/4096;
     
     % Length of each arm
     l1 = 135;    % Link 1
     l2 = 175;    % Link 2
     l3 = 169.28; % Link 3
     
-    % T01 (Transformation Matrix from 0 to 1)
-    
-    % constants obtained from the DH table
-    alpha1 = pi/2;
-    d1 = l1;
-    a1 = 0;
-    
-    T01 = [cos(t1), -sin(t1)*cos(alpha1), sin(t1)*sin(alpha1), a1*cos(t1);
-           sin(t1), cos(t1)*cos(alpha1), -cos(t1)*sin(alpha1), a1*sin(t1);
-           0, sin(alpha1), cos(alpha1), d1;
-           0,0,0,1];
-    
-    % T12 (Transformation Matrix from 1 to 2)
-    
-    % constants obtained from the DH table
-    alpha2 = 0;
-    d2 = 0;
-    a2 = l2;
-    
-    T12 = [cos(t2), -sin(t2)*cos(alpha2), sin(t2)*sin(alpha2), a2*cos(t2);
-           sin(t2), cos(t2)*cos(alpha2), -cos(t2)*sin(alpha2), a2*sin(t2);
-           0, sin(alpha2), cos(alpha2), d2;
-           0,0,0,1];
-    
-    % T23 (Transformation Matrix from 2 to 3)
-    
-    % constants obtained from the DH table
-    alpha3 = 0;
-    d3 = 0;
-    a3 = l3;
-    t3 = t3 -pi/2;
-    
-    
-    T23 = [cos(t3), -sin(t3)*cos(alpha3), sin(t3)*sin(alpha3), a3*cos(t3);
-           sin(t3), cos(t3)*cos(alpha3), -cos(t3)*sin(alpha3), a3*sin(t3);
-           0, sin(alpha3), cos(alpha3), d3;
-           0,0,0,1];
+    T01 = tdh(0,t1,0,0);       % base to shoulder
+    T12 = tdh(l1,0,0,pi/2);    % shoulder to elbow    
+    T23 = tdh(0,t2,l2,0);      % elbow to wrist
+    T34 = tdh(0,t3-pi/2,l3,0); % wrist to gripper
     
     % Produced Matrices from other Transformation Matricies
+    T04 = T01*T12*T23*T34;
     T03 = T01*T12*T23;
     T02 = T01*T12;
     
