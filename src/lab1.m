@@ -44,7 +44,10 @@ sample = [];
 elap = [];
 elapsedTime = 0;
 runTime = 128;
+TipVels = [0;0;0];
+TipVals = [0,0,0];
 
+TipValSave = [0,0,0];
 %%
 try
     
@@ -137,46 +140,17 @@ try
 %     elbowPose(1) = 0;
 %     wristPose(1) = 0;
 
-%     % Inverse Points Initialization
-%     inversePoint1 = ikin([225,50,0]);
-%     inversePoint2 = ikin([225,-50,0]);
-%     inversePoint3 = ikin([175,-50,0]);
-%     inversePoint4 = ikin([175,50,0]);
-%     inversePoint5 = ikin([200,0,100]);
-%     
-% 
-%     % Array of the Inverse Points
-%     invArray =  [inversePoint1;
-%                  inversePoint2; 
-%                  inversePoint3;
-%                  inversePoint4;
-%                  inversePoint1;
-%                  inversePoint5;
-%                  inversePoint2;
-%                  inversePoint5;
-%                  inversePoint3;
-%                  inversePoint5;
-%                  inversePoint4;
-%                  0,0,0];
+    
              
              
-    % Extra Credit:
-    
-    % Inverse Points
-    inversePoint1 = ikin([175,0,10]);
-    inversePoint2 = ikin([225,-50,20]);
-    inversePoint3 = ikin([275,0,30]);
-    inversePoint4 = ikin([225,50,40]);
-    
-    inversePoint5 = ikin([175,0,50]);
-    inversePoint6 = ikin([225,-50,60]);
-    inversePoint7 = ikin([275,0,70]);
-    inversePoint8 = ikin([225,50,80]);
-    
-    inversePoint9 = ikin([175,0,90]);
-    inversePoint10 = ikin([225,-50,100]);
-    inversePoint11 = ikin([275,0,110]);
-    inversePoint12 = ikin([225,50,120]);
+%% Extra Credit From Lab 3
+
+    % Inverse Points for Pyramid
+    inversePoint1 = ikin([225,50,0]);
+    inversePoint2 = ikin([225,-50,0]);
+    inversePoint3 = ikin([175,-50,0]);
+    inversePoint4 = ikin([175,50,0]);
+    inversePoint5 = ikin([200,0,100]);
     
 
     % Array of the Inverse Points
@@ -184,21 +158,52 @@ try
                  inversePoint2; 
                  inversePoint3;
                  inversePoint4;
+                 inversePoint1;
                  inversePoint5;
-                 inversePoint6;
-                 inversePoint7;
-                 inversePoint8;
-                 inversePoint9;
-                 inversePoint10;
-                 inversePoint11;
+                 inversePoint2;
+                 inversePoint5;
+                 inversePoint3;
+                 inversePoint5;
+                 inversePoint4;
                  0,0,0];
+
+%     % Inverse Points for Spiral
+%     inversePoint1 = ikin([175,0,10]);
+%     inversePoint2 = ikin([225,-50,20]);
+%     inversePoint3 = ikin([275,0,30]);
+%     inversePoint4 = ikin([225,50,40]);
+%     
+%     inversePoint5 = ikin([175,0,50]);
+%     inversePoint6 = ikin([225,-50,60]);
+%     inversePoint7 = ikin([275,0,70]);
+%     inversePoint8 = ikin([225,50,80]);
+%     
+%     inversePoint9 = ikin([175,0,90]);
+%     inversePoint10 = ikin([225,-50,100]);
+%     inversePoint11 = ikin([275,0,110]);
+%     inversePoint12 = ikin([225,50,120]);
+%     
+% 
+%     % Array of the Inverse Points
+%     invArray =  [inversePoint1;
+%                  inversePoint2; 
+%                  inversePoint3;
+%                  inversePoint4;
+%                  inversePoint5;
+%                  inversePoint6;
+%                  inversePoint7;
+%                  inversePoint8;
+%                  inversePoint9;
+%                  inversePoint10;
+%                  inversePoint11;
+%                  0,0,0];
     
              
     % Joint Polynomial Matrices  
     shoulderPoly = [];
     elbowPoly = [];
     wristPoly = [];
-    invArray = [zeros(1,3);invArray]
+    invArray = [zeros(1,3);invArray];
     
     % For loop that initializes the Cubic Polynomials
     for point = 2:size(invArray,1)
@@ -260,51 +265,9 @@ try
     
 end
 
-
-%% THIS IS FROM ONE OF THE FIRST STEPS (REMOVE AFTER LAB IS DONE)
-%     for i=1:30
-%         a = 1;
-%         t = (i-1)*.4 +1;
-%         
-%         if(mod(i,10) == 0)
-%         a = a+1;    
-%         end
-%         elbowPose(i+1) = polyToPos(elbowPoly(a,:), t);
-%         wristPose(i+1) = polyToPos(wristPoly(a,:), t);
-%         shoulderPose(i+1) = polyToPos(shoulderPoly(a,:), t);
-%     end
-    
-%     for j=1:10
-%         t = (j-1)*.4 +9;
-%         elbowPose(j+11) = polyToPos(elbowPoly(2,:), t);
-%         wristPose(j+11) = polyToPos(wristPoly(2,:), t);
-%         shoulderPose(j+11) = polyToPos(shoulderPoly(2,:), t);
-%     end
-%      
-%      for k=1:10
-%          
-%         t = (k-1)*.4 +15;
-%         elbowPose(k+21) = polyToPos(elbowPoly(3,:), t);
-%         wristPose(k+21) = polyToPos(wristPoly(3,:), t);
-%         shoulderPose(k+21) = polyToPos(shoulderPoly(3,:), t);
-%      end
-
-   
-    
-%     shoulderPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(1));
-%     elbowPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(2));
-%     wristPoly1 = cubePoly(1, 5, 0, 0, 0, inversePoint1(3));
-%     
-%     shoulderPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(1), inversePoint2(1));
-%     elbowPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(2), inversePoint2(2));
-%     wristPoly2 = cubePoly(9, 13, 0, 0, inversePoint1(3), inversePoint2(3));
-%     
-%     shoulderPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(1), 0);    
-%     elbowPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(2), 0);
-%     wristPoly3 = cubePoly(15, 19, 0, 0, inversePoint2(3), 0);
 %% Initializations for while loop
-    %Set Array of Values (In Encoder Ticks, I think, do not think these are
-    %used)
+    % Set Array of Values (In Encoder Ticks, I think, do not think these are
+    % used)
     shoulder = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     elbow = [0, 0, 7.55, 55.02, 580, 100, 100,100,100,100];
     wrist = [0, 0, -240, 302.5,-240, 0,0,0,0,0];
@@ -314,7 +277,6 @@ end
     ret2 = [];
     ret3 = [];
 
-
     % for tea = 1:length(shoulder) (this has been here for a while,
     % consider deleting)
     i=1;
@@ -322,6 +284,8 @@ end
     tic
     timerVal = tic;
     counter = 0;
+    counter2=0;
+    
 %% While Loop 
     while tea<=runTime
         
@@ -342,6 +306,12 @@ end
             disp(elbowQuint(tea));
             disp(wristQuint(tea));
             
+            
+            
+            
+            
+            
+            
             tea=tea+1;
             pp.write(SERV_ID, packet);
             pause(0.003);
@@ -349,7 +319,6 @@ end
             
         end
         %pause(0.003); % Minimum amount of time required between write and read
-        
         
         pp.write(SERV_ID_READ, zeros(15,1,'single'));
         
@@ -359,7 +328,18 @@ end
         %timerVal = tic; Probably remove this line 
         elapsedTime = toc(timerVal);
         
-        TipVals = plotDaArm(returnPacket(1:3));
+        counter2 = toc(counterVal)+counter2;
+        
+       
+        TipVals = plotDaArm(returnPacket(1:3),TipVels');
+        
+        if counter2 >=.1
+            TipVels = TipVals - TipValSave;
+            TipVels = TipVels/counter2;
+            TipValSave = TipVals;
+            counter2=0;
+        end
+       
         elap = [elap; elapsedTime];
         TipPos = [TipPos; TipVals'];
         csvwrite('Tip Position', TipPos);
@@ -378,7 +358,7 @@ end
         % Incrementation of i
         i= i+1;
         
-%% Debug stuff
+%% Debug stuff (DELETE AFTER NO LONGER NEEDING DEBUG)
 %         if DEBUG
 %             disp('Sent Packet:');
 %             disp(packet);

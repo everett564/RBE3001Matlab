@@ -28,9 +28,9 @@ function [P1 P2 P3] = fwkin3001(t1,t2,t3)
     T02 = T01*T12;
     
     % Grabbing the position from the produced matricies
-    P3 = T03(1:3, 4);
-    P2 = T02(1:3, 4);
-    P1 = T01(1:3, 4);
+    P3 = T04(1:3, 4);
+    P2 = T03(1:3, 4);
+    P1 = T02(1:3, 4);
    
     
 end

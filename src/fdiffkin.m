@@ -11,6 +11,6 @@ function pder = fdiffkin(q,qder)
     
     % Multiply the Jacobian by the derivative of q
     % return
-    pder = J*qder;
+    pder = J*qder';
     
 end
