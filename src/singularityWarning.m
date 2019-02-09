@@ -7,13 +7,17 @@ function M = singularityWarning(q)
         
         J = jacob0(q);
         J = J(1:3,:);
-        Jt = J.';
+        Jt = J';
         ellipse = J*Jt;
-        [a,b,c] = ellipse_values(ellipse, [p4(1),p4(2),p4(3)]);
+        
+        e = eig(ellipse);
+        a = sqrt(e(1,1));
+        b = sqrt(e(2,1));
+        c = sqrt(e(3,1));
         
         V = (4/3)*pi*a*b*c;
         
-        if V <= 1
+        if V <= 1000
             throw exception
         end
         M = false;

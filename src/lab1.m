@@ -145,9 +145,10 @@ try
              
 %% Extra Credit From Lab 3
 
+
     % Inverse Points for Pyramid
     inversePoint1 = ikin([225,50,0]);
-    inversePoint2 = ikin([225,-50,0]);
+    inversePoint2 = ikin([344,0,135]);
     inversePoint3 = ikin([175,-50,0]);
     inversePoint4 = ikin([175,50,0]);
     inversePoint5 = ikin([200,0,100]);
@@ -166,6 +167,28 @@ try
                  inversePoint5;
                  inversePoint4;
                  0,0,0];
+
+%     % Inverse Points for Pyramid
+%     inversePoint1 = ikin([225,50,0]);
+%     inversePoint2 = ikin([225,-50,0]);
+%     inversePoint3 = ikin([175,-50,0]);
+%     inversePoint4 = ikin([175,50,0]);
+%     inversePoint5 = ikin([200,0,100]);
+%     
+% 
+%     % Array of the Inverse Points
+%     invArray =  [inversePoint1;
+%                  inversePoint2; 
+%                  inversePoint3;
+%                  inversePoint4;
+%                  inversePoint1;
+%                  inversePoint5;
+%                  inversePoint2;
+%                  inversePoint5;
+%                  inversePoint3;
+%                  inversePoint5;
+%                  inversePoint4;
+%                  0,0,0];
 
 %     % Inverse Points for Spiral
 %     inversePoint1 = ikin([175,0,10]);
@@ -264,25 +287,25 @@ try
     shoulderQuint(runTime) = 0;
     
     
-    %% Path approaching singularities
-    shoulderSingle = [];
-    elbowSingle = [];
-    wristSingle = [];
-    
-    singularityPoint = ikin([344,0,135])* (4096/(2*pi));
-    
-    shoulderSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(1))';
-    elbowSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(2))';
-    wristSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(3))';
-
-    % For loop that initializes the Poses of the Robots Trajectory
-    for j=1:10
-        t = (j-1)*.4;
-
-        elbowSingle(j) = quintPolyToPos(elbowSPoly, t);
-        wristSingle(j) = quintPolyToPos(wristSPoly, t);
-        shoulderSingle(j) = quintPolyToPos(shoulderSPoly, t);
-    end
+%     %% Path approaching singularities
+%     shoulderSingle = [];
+%     elbowSingle = [];
+%     wristSingle = [];
+%     
+%     singularityPoint = ikin([344,0,135])* (4096/(2*pi));
+%     
+%     shoulderSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(1))';
+%     elbowSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(2))';
+%     wristSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(3))';
+% 
+%     % For loop that initializes the Poses of the Robots Trajectory
+%     for j=1:10
+%         t = (j-1)*.4;
+% 
+%         elbowSingle(j) = quintPolyToPos(elbowSPoly, t);
+%         wristSingle(j) = quintPolyToPos(wristSPoly, t);
+%         shoulderSingle(j) = quintPolyToPos(shoulderSPoly, t);
+%     end
 
     
         
