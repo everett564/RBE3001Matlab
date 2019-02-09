@@ -1,6 +1,6 @@
 % Inverse Kinematics Function
 % ikin does the inverse kinematics of the position
-% Parameters: takes in a matrix of the x y and z in encoder ticks
+% Parameters: takes in a matrix of the x y and z in centimeters
 % returns the inverse kinematics matrix of the angles in radians
 
 function T = ikin(q)
@@ -25,10 +25,10 @@ try
     wristTheta = -1*(acos(-1*(L2^2 + L3^2 -(n^2 + (z-L1)^2))/(2*L2*L3)) - pi/2);
     shoulderTheta = -1*atan2(y,x);
     
-    % Bounds
-%     if (shoulderTheta < -.92)||(shoulderTheta > .92)||(elbowTheta > 1.53)||(elbowTheta < -.09)||(wristTheta < -.314)||(wristTheta > .92)
-%        throw(exception)
-%     end
+    %Bounds
+    if (shoulderTheta < -pi/2)||(shoulderTheta > pi/2)||(elbowTheta > pi/2)||(elbowTheta < -.05)||(wristTheta < -pi/6)||(wristTheta > .75*pi)
+       throw exception;
+    end
     
     % Return matrix
     T = [shoulderTheta, elbowTheta, wristTheta];

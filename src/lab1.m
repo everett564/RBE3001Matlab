@@ -263,6 +263,29 @@ try
     wristQuint(runTime) = 0;
     shoulderQuint(runTime) = 0;
     
+    
+    %% Path approaching singularities
+    shoulderSingle = [];
+    elbowSingle = [];
+    wristSingle = [];
+    
+    singularityPoint = ikin([344,0,135])* (4096/(2*pi));
+    
+    shoulderSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(1))';
+    elbowSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(2))';
+    wristSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(3))';
+
+    % For loop that initializes the Poses of the Robots Trajectory
+    for j=1:10
+        t = (j-1)*.4;
+
+        elbowSingle(j) = quintPolyToPos(elbowSPoly, t);
+        wristSingle(j) = quintPolyToPos(wristSPoly, t);
+        shoulderSingle(j) = quintPolyToPos(shoulderSPoly, t);
+    end
+
+    
+        
 end
 
 %% Initializations for while loop
@@ -289,6 +312,12 @@ end
 %% While Loop 
     while tea<=runTime
         
+        % tests for singularity
+        radianShoulder = shoulderQuint(tea) * ((2*pi)/4096);
+        radianElbow = elbowQuint(tea) * ((2*pi)/4096);
+        radianWrist = wristQuint(tea) * ((2*pi)/4096);
+        singularityWarning([radianShoulder, radianElbow, radianWrist]);
+        
         counterVal = tic;
         %incremtal = (single(k) / sinWaveInc); (what is this)
         
@@ -297,21 +326,13 @@ end
         
         %pp.write sends a 15 float packet to the micro controller
         if counter>=0.4
-            
             packet = zeros(15, 1, 'single');
             packet(1) = shoulderQuint(tea); 
             packet(2) = elbowQuint(tea);    
             packet(3) = wristQuint(tea);
             disp(shoulderQuint(tea));
             disp(elbowQuint(tea));
-            disp(wristQuint(tea));
-            
-            
-            
-            
-            
-            
-            
+            disp(wristQuint(tea));                
             tea=tea+1;
             pp.write(SERV_ID, packet);
             pause(0.003);

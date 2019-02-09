@@ -23,6 +23,16 @@ function T = plotDaArm(q,qder)
     hold on
     quiver3(p4(1),p4(2),p4(3),velocityArr(2)*.005,velocityArr(1)*.005,velocityArr(3)*.005);
     hold off
+    
+    % Elipse Plot
+    J = jacob0(q);
+    J = J(1:3,:);
+    Jt = J.';
+    ellipse = J*Jt;  
+    hold on
+    plot_ellipse(ellipse, [p4(1),p4(2),p4(3)]);
+    hold off
+    
     % sets the limits of the graph
     xlim([0,350])
     ylim([-200,200])
