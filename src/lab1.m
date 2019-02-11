@@ -125,6 +125,7 @@ try
     % shoulder = [0, 324, -18, -404, -295, 0];
     % elbow = [0, 133.3, -75, -14, 44, 0];
     % wrist = [0, 221, 386, 79, 129, 0];
+    
 %% Cubic Polynomials
 
    
@@ -140,8 +141,6 @@ try
 %     elbowPose(1) = 0;
 %     wristPose(1) = 0;
 
-    
-             
              
 %% Extra Credit From Lab 3
 
