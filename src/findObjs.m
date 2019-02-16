@@ -51,7 +51,7 @@ end
 
 
 
-%% Black and White
+%% Bases
  
  im3 = imfilter(im3,[1/9 1/9 1/9; 1/9 1/9 1/9; 1/9 1/9 1/9]);
  im3 = rgb2gray(im3);
@@ -64,22 +64,40 @@ end
 figure; imshow(im3, 'InitialMagnification', 100);
 title('Segmented Bases');
     
-[centers, radii, metric] = imfindcircles(im3,[30 70], 'Sensitivity', .94);
+[centers2, radii2, metric] = imfindcircles(im3,[30 70], 'Sensitivity', .9425);
 
-viscircles(centers, radii,'EdgeColor','b');
+viscircles(centers2, radii2,'EdgeColor','b');
 
 hold on
-plot(centers(:,1),centers(:,2), 'b*')
+plot(centers2(:,1),centers2(:,2), 'b*')
 hold off
 
-% Image Analysis
+newCent2 = [(centers2(:,1)- radii2) (centers2(:,2)-radii2)];
+locations = [newCent2 radii2*2 radii2*2];
+sizes = cell(size(locations,1),1);
+
+for i = 1:size(centers2,1)
+    
+    row = radii2(i,:);
+    
+    if row > 55 
+       sizes{i} = ['Large: ', num2str(row)];
+    else 
+       sizes{i} = ['Small: ', num2str(row)];
+    end
+    
+end
 
 
-% Insert labels for the coins.
-im = insertObjectAnnotation(im, 'rectangle', location, colors);
-figure; imshow(im);
-title('Detected');
+% Insert labels
+im5 = insertObjectAnnotation(im, 'rectangle', location, colors);
+figure; imshow(im5);
+title('Detected Colors');
 
+%
+im4 = insertObjectAnnotation(im, 'rectangle', locations, sizes);
+figure; imshow(im4);
+title('Detected Bases');
 %%
 
  %diskDia = sqrt((4*area)/pi);
