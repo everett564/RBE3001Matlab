@@ -5,11 +5,11 @@ I = rgb2hsv(RGB);
 channel1Min = 0.125;
 channel1Max = 0.7;
 % Define thresholds for 'Saturation'
-channel2Min = 0.25;
-channel2Max = 0.950;
+channel2Min = 0.0;
+channel2Max = 1.0;
 % Define thresholds for 'Value'
 channel3Min = 0.50;
-channel3Max = 0.950;
+channel3Max = 1.0;
 % Create mask based on chosen histogram thresholds
 BW = ( (I(:,:,1) >= channel1Min) | (I(:,:,1) <= channel1Max) ) & ...
     (I(:,:,2) >= channel2Min ) & (I(:,:,2) <= channel2Max) & ...

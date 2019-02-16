@@ -2,39 +2,85 @@
 function [imDetectedDisk, robotFramePose, diskDia] = findObjs(imOrig, T_checker_to_robot, T_cam_to_checker, cameraParams)
 
 % image enhancement
- [im, ~] = undistortImage(imOrig, cameraParams, 'OutputView', 'full');
- %im = imfilter(im,[1/9 1/9 1/9; 1/9 1/9 1/9; 1/9 1/9 1/9]);
- im = rgb2gray(im);
- %im = medfilt2(im);
- im = histeq(im);
  
-% % segmentation
-%  [~, threshold] = edge(im, 'sobel');
-%  fudgeFactor = .5;
-%  lines = edge(im,'sobel', threshold * fudgeFactor);
-%  
-% % post-processing
-%  se90 = strel('line', 4, 90);
-%  se0 = strel('line', 4, 0);
-%  dilate = imdilate(lines, [se90 se0]);
-%  border = imclearborder(dilate, 4);
-%  
-%  bw = imfill(border, 'holes');
-%  
-%  seD = strel('diamond',4);
-%  smooth = imerode(bw,seD);
-%  smooth = imerode(smooth,seD);
- 
-% information extraction
-%  info = regionprops(smooth, 'Area', 'Centroid');
-%  centroid = info.Centroid;
-%  area = info.Area;
-[centers, radii, metric] = imfindcircles(im,[20 60]);
-centersStrong3 = centers(1:3,:); 
-radiiStrong3 = radii(1:3);
+    % Undistort the image
+    [im, ~] = undistortImage(imOrig, cameraParams, 'OutputView', 'full');
+    
+    % Mask the Images
+    [mask,im2] = createMask7(im);
+    [mask,im3] = createMask8(im);
+    
+   
+%% Color
+ im2 = imfilter(im2,[1/9 1/9 1/9; 1/9 1/9 1/9; 1/9 1/9 1/9]);
+ im2 = rgb2gray(im2);
 
-imshow(im);
-viscircles(centersStrong3, radiiStrong3,'EdgeColor','b');
+figure; imshow(im2, 'InitialMagnification', 100);
+title('Segmented Dots');
+
+[centers, radii, metric] = imfindcircles(im2,[20 60],'Sensitivity', .90);
+
+viscircles(centers, radii,'EdgeColor','b');
+
+hold on
+plot(centers(:,1),centers(:,2), 'b*')
+hold off
+
+newCent = [(centers(:,1)- radii) (centers(:,2)-radii)];
+location = [newCent radii*2 radii*2];
+colors = cell(size(location,1),1);
+
+for i = 1:size(centers,1)
+    
+    row = centers(i,:);
+    pixVal = impixel(im,row(1),row(2));
+    for j= 1:radii/5
+    pixVal = [pixVal;impixel(im,row(1)+j,row(2)+j)];
+    end
+    pixVal = mean(pixVal);
+    
+    if pixVal(1) > 70 && pixVal(3) > 100 
+        colors{i} = ['green:' num2str(pixVal)];
+    elseif pixVal(3) > 190  
+         colors{i} =  ['blue:' num2str(pixVal)];
+    else 
+         colors{i} =  ['yellow:' num2str(pixVal)];
+    end
+    
+end
+
+
+
+%% Black and White
+ 
+ im3 = imfilter(im3,[1/9 1/9 1/9; 1/9 1/9 1/9; 1/9 1/9 1/9]);
+ im3 = rgb2gray(im3);
+ 
+ [~, threshold] = edge(im3, 'sobel');
+ edge(im3,'sobel', threshold);
+ im3 = imfill(im3);
+    
+    
+figure; imshow(im3, 'InitialMagnification', 100);
+title('Segmented Bases');
+    
+[centers, radii, metric] = imfindcircles(im3,[30 70], 'Sensitivity', .94);
+
+viscircles(centers, radii,'EdgeColor','b');
+
+hold on
+plot(centers(:,1),centers(:,2), 'b*')
+hold off
+
+% Image Analysis
+
+
+% Insert labels for the coins.
+im = insertObjectAnnotation(im, 'rectangle', location, colors);
+figure; imshow(im);
+title('Detected');
+
+%%
 
  %diskDia = sqrt((4*area)/pi);
  
