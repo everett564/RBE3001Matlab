@@ -41,7 +41,7 @@ for i = 1:size(centers,1)
     
     if pixVal(1) > 70 && pixVal(3) > 100 
         colors{i} = ['green:' num2str(pixVal)];
-    elseif pixVal(3) > 190  
+    elseif pixVal(3) > 150  
          colors{i} =  ['blue:' num2str(pixVal)];
     else 
          colors{i} =  ['yellow:' num2str(pixVal)];
@@ -80,7 +80,7 @@ for i = 1:size(centers2,1)
     
     row = radii2(i,:);
     
-    if row > 55 
+    if row > 50 
        sizes{i} = ['Large: ', num2str(row)];
     else 
        sizes{i} = ['Small: ', num2str(row)];
