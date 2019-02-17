@@ -68,6 +68,7 @@ try
     SERV_ID = 01;
     SERV_ID_READ = 03; % we will be talking to server ID 37 on
     SERV_ID_PID = 04;  % the Nucleo
+    SERV_ID_GRIP = 05; % Gripper Channel
     
     %   This is code that was commented out a while ago
     %   pp.write(SERV_ID_READ, zeros(15,1,'single'));
