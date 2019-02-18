@@ -345,7 +345,7 @@ end
     counter = 0;
     counter2=0;
     
-    [objectShoulder, objectElbow, objectWrist] = pickUpObjects();
+    [objectShoulder, objectElbow, objectWrist, deleteMe] = pickUpObjects();
     
 %% While Loop 
     while tea<=runTime

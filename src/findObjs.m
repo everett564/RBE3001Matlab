@@ -124,7 +124,7 @@ end
 image(im5);
 imOutput = im5;
 
-robotFramePose = location;
+robotFramePose = worldPoints;
 diskDia = sizes;
 
 

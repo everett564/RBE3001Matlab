@@ -1,4 +1,4 @@
-function [shoulder, elbow, wrist] = pickUpObjects()
+function [shoulder, elbow, wrist, invArray] = pickUpObjects()
 
     clear all
     close all
@@ -24,19 +24,33 @@ function [shoulder, elbow, wrist] = pickUpObjects()
     [imOutput, robotFramePose, diskDia] = findObjs(imgOrg, checkToOrigin, camToCheck, cParams);
     
     objectPoints = [];
+    aboveObject = [];
     invArray = [];
     
+    % [0,0,50] -> hover above object -> go to object
     for object = 1:size(robotFramePose,1)
         objectPoints(object,1:2) = robotFramePose(object,1:2);
-        objectPoints(object,3) = 0;
+        objectPoints(object,3) = -10;
         objectKin = ikin(objectPoints(object,1:3));
-        invArray(object,1:3) = objectKin;
+        
+        aboveObject(object,1:2) = robotFramePose(object,1:2);
+        aboveObject(object,3) = 50;
+        aboveObjectKin = ikin(aboveObject(object,1:3));
+        
+        hover = ikin([175,0,50]);
+        
+        place = (4*object);
+        invArray(place-3,1:3) = hover;
+        invArray(place-2,1:3) = aboveObjectKin;
+        invArray(place-1,1:3) = objectKin;
+        invArray(place,1:3) = aboveObjectKin;
+        
     end
-    
+        
     shoulderPoints = [];
     elbowPoints = [];
     wristPoints = [];
-    invArray = [zeros(1,3);invArray;zeros(1,3)];
+    invArray = [zeros(1,3);invArray;ikin([175,0,50]);zeros(1,3)];
 
     % For loop that initializes the Cubic Polynomials
     for point = 2:size(invArray,1)
