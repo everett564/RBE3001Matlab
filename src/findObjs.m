@@ -20,6 +20,7 @@ im2 = imfilter(im2,[1/9 1/9 1/9; 1/9 1/9 1/9; 1/9 1/9 1/9]);
 %title('Segmented Dots');
 
 [centers, radii, metric] = imfindcircles(im2,[20 60],'Sensitivity', .90);
+
 if size(centers) > 0
 viscircles(centers, radii,'EdgeColor','b');
 
@@ -79,6 +80,7 @@ end
 %title('Segmented Bases');
     
 [centers2, radii2, metric] = imfindcircles(im3,[30 70], 'Sensitivity', .94);
+
 if size(centers2) > 0 
 viscircles(centers2, radii2,'EdgeColor','b');
 
@@ -133,7 +135,6 @@ robotFramePose = [];
 diskDia = [];
 
 end
-
 
 
 end

@@ -20,7 +20,7 @@ checkToCam = camToCheck^-1;
 while 1
 imgOrg = snapshot(cam);
 
-findObjs(imgOrg, checkToOrigin, camToCheck, cParams);
+[imOutput, robotFramePose, diskDia] = findObjs(imgOrg, checkToOrigin, camToCheck, cParams);
 
 
 end

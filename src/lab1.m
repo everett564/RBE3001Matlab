@@ -345,13 +345,15 @@ end
     counter = 0;
     counter2=0;
     
+    [objectShoulder, objectElbow, objectWrist] = pickUpObjects();
+    
 %% While Loop 
     while tea<=runTime
         
         % tests for singularity
-        radianShoulder = shoulderQuint(tea) * ((2*pi)/4096);
-        radianElbow = elbowQuint(tea) * ((2*pi)/4096);
-        radianWrist = wristQuint(tea) * ((2*pi)/4096);
+        radianShoulder = objectShoulder(tea) * ((2*pi)/4096);
+        radianElbow = objectElbow(tea) * ((2*pi)/4096);
+        radianWrist = objectWrist(tea) * ((2*pi)/4096);
         singularityWarning([radianShoulder, radianElbow, radianWrist]);
         
         counterVal = tic;
@@ -363,12 +365,12 @@ end
         %pp.write sends a 15 float packet to the micro controller
         if counter>=0.4
             packet = zeros(15, 1, 'single');
-            packet(1) = shoulderQuint(tea); 
-            packet(2) = elbowQuint(tea);    
-            packet(3) = wristQuint(tea);
-            disp(shoulderQuint(tea));
-            disp(elbowQuint(tea));
-            disp(wristQuint(tea));                
+            packet(1) = objectShoulder(tea); 
+            packet(2) = objectElbow(tea);    
+            packet(3) = objectWrist(tea);
+            disp(objectShoulder(tea));
+            disp(objectElbow(tea));
+            disp(objectWrist(tea));                
             tea=tea+1;
             pp.write(SERV_ID, packet);
             pause(0.003);
