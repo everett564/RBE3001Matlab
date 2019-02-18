@@ -159,31 +159,9 @@ try
 %% Extra Credit From Lab 3
 
 
-    % Inverse Points for Pyramid
-    inversePoint1 = ikin([225,50,0]);
-    inversePoint2 = ikin([344,0,135]);
-    inversePoint3 = ikin([175,-50,0]);
-    inversePoint4 = ikin([175,50,0]);
-    inversePoint5 = ikin([200,0,100]);
-    
-
-    % Array of the Inverse Points
-    invArray =  [inversePoint1;
-                 inversePoint2; 
-                 inversePoint3;
-                 inversePoint4;
-                 inversePoint1;
-                 inversePoint5;
-                 inversePoint2;
-                 inversePoint5;
-                 inversePoint3;
-                 inversePoint5;
-                 inversePoint4;
-                 0,0,0];
-
 %     % Inverse Points for Pyramid
 %     inversePoint1 = ikin([225,50,0]);
-%     inversePoint2 = ikin([225,-50,0]);
+%     inversePoint2 = ikin([344,0,135]);
 %     inversePoint3 = ikin([175,-50,0]);
 %     inversePoint4 = ikin([175,50,0]);
 %     inversePoint5 = ikin([200,0,100]);
@@ -202,103 +180,125 @@ try
 %                  inversePoint5;
 %                  inversePoint4;
 %                  0,0,0];
-
-%     % Inverse Points for Spiral
-%     inversePoint1 = ikin([175,0,10]);
-%     inversePoint2 = ikin([225,-50,20]);
-%     inversePoint3 = ikin([275,0,30]);
-%     inversePoint4 = ikin([225,50,40]);
-%     
-%     inversePoint5 = ikin([175,0,50]);
-%     inversePoint6 = ikin([225,-50,60]);
-%     inversePoint7 = ikin([275,0,70]);
-%     inversePoint8 = ikin([225,50,80]);
-%     
-%     inversePoint9 = ikin([175,0,90]);
-%     inversePoint10 = ikin([225,-50,100]);
-%     inversePoint11 = ikin([275,0,110]);
-%     inversePoint12 = ikin([225,50,120]);
-%     
 % 
-%     % Array of the Inverse Points
-%     invArray =  [inversePoint1;
-%                  inversePoint2; 
-%                  inversePoint3;
-%                  inversePoint4;
-%                  inversePoint5;
-%                  inversePoint6;
-%                  inversePoint7;
-%                  inversePoint8;
-%                  inversePoint9;
-%                  inversePoint10;
-%                  inversePoint11;
-%                  0,0,0];
-    
-             
-    % Joint Polynomial Matrices  
-    shoulderPoly = [];
-    elbowPoly = [];
-    wristPoly = [];
-    invArray = [zeros(1,3);invArray];
-    
-    % For loop that initializes the Cubic Polynomials
-    for point = 2:size(invArray,1)
-        
-        shoulderPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,1), invArray(point,1))';
-        elbowPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,2), invArray(point,2))';
-        wristPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,3), invArray(point,2))';
-    
-        % For loop that initializes the Poses of the Robots Trajectory
-        for j=1:10
-            t = (j-1)*.4 +(1+4*(point-1));
-            
-            elbowPose(j+1 +10*(point-2)) = quintPolyToPos(elbowPoly, t);
-            wristPose(j+1 +10*(point-2)) = quintPolyToPos(wristPoly, t);
-            shoulderPose(j+1+10*(point-2)) = quintPolyToPos(shoulderPoly, t);
-        end
-    
-    end
-
-    % Initialized first points
-    shoulderPose(1)=0;
-    elbowPose(1) = 0;
-    wristPose(1) = 0;
+% %     % Inverse Points for Pyramid
+% %     inversePoint1 = ikin([225,50,0]);
+% %     inversePoint2 = ikin([225,-50,0]);
+% %     inversePoint3 = ikin([175,-50,0]);
+% %     inversePoint4 = ikin([175,50,0]);
+% %     inversePoint5 = ikin([200,0,100]);
+% %     
+% % 
+% %     % Array of the Inverse Points
+% %     invArray =  [inversePoint1;
+% %                  inversePoint2; 
+% %                  inversePoint3;
+% %                  inversePoint4;
+% %                  inversePoint1;
+% %                  inversePoint5;
+% %                  inversePoint2;
+% %                  inversePoint5;
+% %                  inversePoint3;
+% %                  inversePoint5;
+% %                  inversePoint4;
+% %                  0,0,0];
+% 
+% %     % Inverse Points for Spiral
+% %     inversePoint1 = ikin([175,0,10]);
+% %     inversePoint2 = ikin([225,-50,20]);
+% %     inversePoint3 = ikin([275,0,30]);
+% %     inversePoint4 = ikin([225,50,40]);
+% %     
+% %     inversePoint5 = ikin([175,0,50]);
+% %     inversePoint6 = ikin([225,-50,60]);
+% %     inversePoint7 = ikin([275,0,70]);
+% %     inversePoint8 = ikin([225,50,80]);
+% %     
+% %     inversePoint9 = ikin([175,0,90]);
+% %     inversePoint10 = ikin([225,-50,100]);
+% %     inversePoint11 = ikin([275,0,110]);
+% %     inversePoint12 = ikin([225,50,120]);
+% %     
+% % 
+% %     % Array of the Inverse Points
+% %     invArray =  [inversePoint1;
+% %                  inversePoint2; 
+% %                  inversePoint3;
+% %                  inversePoint4;
+% %                  inversePoint5;
+% %                  inversePoint6;
+% %                  inversePoint7;
+% %                  inversePoint8;
+% %                  inversePoint9;
+% %                  inversePoint10;
+% %                  inversePoint11;
+% %                  0,0,0];
+%     
+%              
+%     % Joint Polynomial Matrices  
+%     shoulderPoly = [];
+%     elbowPoly = [];
+%     wristPoly = [];
+%     invArray = [zeros(1,3);invArray];
+%     
+%     % For loop that initializes the Cubic Polynomials
+%     for point = 2:size(invArray,1)
+%         
+%         shoulderPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,1), invArray(point,1))';
+%         elbowPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,2), invArray(point,2))';
+%         wristPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,3), invArray(point,2))';
+%     
+%         % For loop that initializes the Poses of the Robots Trajectory
+%         for j=1:10
+%             t = (j-1)*.4 +(1+4*(point-1));
+%             
+%             elbowPose(j+1 +10*(point-2)) = quintPolyToPos(elbowPoly, t);
+%             wristPose(j+1 +10*(point-2)) = quintPolyToPos(wristPoly, t);
+%             shoulderPose(j+1+10*(point-2)) = quintPolyToPos(shoulderPoly, t);
+%         end
+%     
+%     end
+% 
+%     % Initialized first points
+%     shoulderPose(1)=0;
+%     elbowPose(1) = 0;
+%     wristPose(1) = 0;
 
 %% Quintic Polynomials
     
-    % Joint Polynomial Matrices  
-    shoulderQuint = [];
-    elbowQuint = [];
-    wristQuint = [];
-             
-    % For loop that initializes the Quintic Polynomials
-    for point = 2:size(invArray,1)
-        
-        shoulderQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,1), invArray(point,1))';
-        elbowQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,2), invArray(point,2))';
-        wristQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,3), invArray(point,3))';
-    
-        % For loop that initializes the Poses of the Robots Trajectory
-        for j=1:10
-            t = (j-1)*.4 +(1+4*(point-1));
-            
-            elbowQuint(j+1 +10*(point-2)) = quintPolyToPos(elbowQPoly, t);
-            wristQuint(j+1 +10*(point-2)) = quintPolyToPos(wristQPoly, t);
-            shoulderQuint(j+1+10*(point-2)) = quintPolyToPos(shoulderQPoly, t);
-        end
-    
-    end
-    
-    % Initializes first points
-    elbowQuint(1) = 0;
-    wristQuint(1) = 0;
-    shoulderQuint(1) = 0;
-
-    % Initializes final points
-    elbowQuint(runTime) = 0;
-    wristQuint(runTime) = 0;
-    shoulderQuint(runTime) = 0;
-    
+%     % Joint Polynomial Matrices  
+%     shoulderQuint = [];
+%     elbowQuint = [];
+%     wristQuint = [];
+%              
+%     % For loop that initializes the Quintic Polynomials
+%     for point = 2:size(invArray,1)
+%         
+%         shoulderQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,1), invArray(point,1))';
+%         elbowQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,2), invArray(point,2))';
+%         wristQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,3), invArray(point,3))';
+%     
+%         % For loop that initializes the Poses of the Robots Trajectory
+%         for j=1:10
+%             t = (j-1)*.4 +(1+4*(point-1));
+%             
+%             elbowQuint(j+1 +10*(point-2)) = quintPolyToPos(elbowQPoly, t);
+%             wristQuint(j+1 +10*(point-2)) = quintPolyToPos(wristQPoly, t);
+%             shoulderQuint(j+1+10*(point-2)) = quintPolyToPos(shoulderQPoly, t);
+%         end
+%     
+%     end
+%     
+%     % Initializes first points
+%     elbowQuint(1) = 0;
+%     wristQuint(1) = 0;
+%     shoulderQuint(1) = 0;
+% 
+%     % Initializes final points
+%     elbowQuint(runTime) = 0;
+%     wristQuint(runTime) = 0;
+%     shoulderQuint(runTime) = 0;
+%     
     
 %     %% Path approaching singularities
 %     shoulderSingle = [];

@@ -21,8 +21,8 @@ pp = PacketProcessor(myHIDSimplePacketComs);
 
 SERV_ID = 05;            
 packet = zeros(15, 1, 'single');
+
 packet(1) = 0;
-packet(1) = 1;
 pp.write(SERV_ID, packet); 
 pause(0.003); % Minimum amount of time required between write and read
 
