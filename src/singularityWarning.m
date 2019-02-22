@@ -24,7 +24,7 @@ function M = singularityWarning(q)
         % Volume Formula for a Ellipse
         V = (4/3)*pi*a*b*c;
         
-        if V <= 10000000 % LOL I KNOW THIS VALUE IS LARGE BUT IT WORKS
+        if V <= 15000000 % LOL I KNOW THIS VALUE IS LARGE BUT IT WORKS
             throw exception
         end
         M = false;

@@ -1,5 +1,5 @@
 % findObjs detects objects that may be present in an RGB image
-function [imOutput, robotFramePose, diskDia] = findObjs(imOrig, T_checker_to_robot, T_cam_to_checker, cameraParams)
+function [imOutput, robotFramePose, diskDia, colors] = findObjs(imOrig, T_checker_to_robot, T_cam_to_checker, cameraParams)
 
 % image enhancement
  

@@ -1,18 +1,18 @@
 %% RBE3001 - Laboratory 3 %%
 %% Camera Things
-% robot origin to checherboard origin = 
+% robot origin to checherboard origin =
 originToCheck=   [1 ,  0   ,0  , 275.8;
-   0 ,  1  , 0  , 113.6;
-   0 ,  0,  1   ,0;
-   0  , 0 ,  0  , 1]
+    0 ,  1  , 0  , 113.6;
+    0 ,  0,  1   ,0;
+    0  , 0 ,  0  , 1]
 %
 %
 % camera origin to checkerboard origin =
-% 
+%
 camToCheck=   [-0.0017 ,  -0.8032 ,   0.5957,  107.6207;
     0.9998  ,  0.0094  ,  0.0155 , 109.2884;
-   -0.0180  ,  0.5956  ,  0.8031 , 277.1416;
-         0 ,        0   ,      0,    1.0000]
+    -0.0180  ,  0.5956  ,  0.8031 , 277.1416;
+    0 ,        0   ,      0,    1.0000]
 %% Initializations:
 clear
 clear java
@@ -60,11 +60,12 @@ runTime = 128;
 TipVels = [0;0;0];
 TipVals = [0,0,0];
 
+
 TipValSave = [0,0,0];
 %%
 try
     
-%% Initialized Server Values    
+    %% Initialized Server Values
     SERV_ID = 01;
     SERV_ID_READ = 03; % we will be talking to server ID 37 on
     SERV_ID_PID = 04;  % the Nucleo
@@ -77,8 +78,8 @@ try
     %   homePos = [];
     %   homePos(1,1:3) = returnPacket2(1:3,1);
     
-%% Initialization of the PID values
-   
+    %% Initialization of the PID values
+    
     %Shoulder
     Kp_Shoulder=.001;
     Ki_Shoulder=.001;
@@ -93,10 +94,10 @@ try
     Kp_Wrist=.0006;
     Ki_Wrist=.0025;
     Kd_Wrist=.05;
-
     
     
-%% Packet PID Value Initialization
+    
+    %% Packet PID Value Initialization
     
     % Debug Statement (Leave for debugging)
     % DEBUG   = true;          % enables/disables debug prints
@@ -104,7 +105,7 @@ try
     
     % Instantiate a packet - the following instruction allocates 64
     % bytes for this purpose. Recall that the HID interface supports
-    % packet sizes up to 64 bytes. 
+    % packet sizes up to 64 bytes.
     packet = zeros(15, 1, 'single');
     
     % Shoulder
@@ -140,314 +141,378 @@ try
     % elbow = [0, 133.3, -75, -14, 44, 0];
     % wrist = [0, 221, 386, 79, 129, 0];
     
-%% Cubic Polynomials
-
-   
-%     elbowPoly1 = cubePoly(1, 5, 0, 0, 7.55, 55.02);
-%     wristPoly1 = cubePoly(1, 5, 0, 0, -254.75, 302.5);
-%     
-%     elbowPoly2 = cubePoly(5, 9, 0, 0, 55.02, 580);
-%     wristPoly2 = cubePoly(5, 9, 0, 0, 302.5, -254.75);
-%     
-%     elbowPoly3 = cubePoly(9, 13, 0, 0, 580, 7.55);
-%     wristPoly3 = cubePoly(9, 13, 0, 0, -254.75, -254.75);
-%     
-%     elbowPose(1) = 0;
-%     wristPose(1) = 0;
-
-             
-%% Extra Credit From Lab 3
-
-
-%     % Inverse Points for Pyramid
-%     inversePoint1 = ikin([225,50,0]);
-%     inversePoint2 = ikin([344,0,135]);
-%     inversePoint3 = ikin([175,-50,0]);
-%     inversePoint4 = ikin([175,50,0]);
-%     inversePoint5 = ikin([200,0,100]);
-%     
-% 
-%     % Array of the Inverse Points
-%     invArray =  [inversePoint1;
-%                  inversePoint2; 
-%                  inversePoint3;
-%                  inversePoint4;
-%                  inversePoint1;
-%                  inversePoint5;
-%                  inversePoint2;
-%                  inversePoint5;
-%                  inversePoint3;
-%                  inversePoint5;
-%                  inversePoint4;
-%                  0,0,0];
-% 
-% %     % Inverse Points for Pyramid
-% %     inversePoint1 = ikin([225,50,0]);
-% %     inversePoint2 = ikin([225,-50,0]);
-% %     inversePoint3 = ikin([175,-50,0]);
-% %     inversePoint4 = ikin([175,50,0]);
-% %     inversePoint5 = ikin([200,0,100]);
-% %     
-% % 
-% %     % Array of the Inverse Points
-% %     invArray =  [inversePoint1;
-% %                  inversePoint2; 
-% %                  inversePoint3;
-% %                  inversePoint4;
-% %                  inversePoint1;
-% %                  inversePoint5;
-% %                  inversePoint2;
-% %                  inversePoint5;
-% %                  inversePoint3;
-% %                  inversePoint5;
-% %                  inversePoint4;
-% %                  0,0,0];
-% 
-% %     % Inverse Points for Spiral
-% %     inversePoint1 = ikin([175,0,10]);
-% %     inversePoint2 = ikin([225,-50,20]);
-% %     inversePoint3 = ikin([275,0,30]);
-% %     inversePoint4 = ikin([225,50,40]);
-% %     
-% %     inversePoint5 = ikin([175,0,50]);
-% %     inversePoint6 = ikin([225,-50,60]);
-% %     inversePoint7 = ikin([275,0,70]);
-% %     inversePoint8 = ikin([225,50,80]);
-% %     
-% %     inversePoint9 = ikin([175,0,90]);
-% %     inversePoint10 = ikin([225,-50,100]);
-% %     inversePoint11 = ikin([275,0,110]);
-% %     inversePoint12 = ikin([225,50,120]);
-% %     
-% % 
-% %     % Array of the Inverse Points
-% %     invArray =  [inversePoint1;
-% %                  inversePoint2; 
-% %                  inversePoint3;
-% %                  inversePoint4;
-% %                  inversePoint5;
-% %                  inversePoint6;
-% %                  inversePoint7;
-% %                  inversePoint8;
-% %                  inversePoint9;
-% %                  inversePoint10;
-% %                  inversePoint11;
-% %                  0,0,0];
-%     
-%              
-%     % Joint Polynomial Matrices  
-%     shoulderPoly = [];
-%     elbowPoly = [];
-%     wristPoly = [];
-%     invArray = [zeros(1,3);invArray];
-%     
-%     % For loop that initializes the Cubic Polynomials
-%     for point = 2:size(invArray,1)
-%         
-%         shoulderPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,1), invArray(point,1))';
-%         elbowPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,2), invArray(point,2))';
-%         wristPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,3), invArray(point,2))';
-%     
-%         % For loop that initializes the Poses of the Robots Trajectory
-%         for j=1:10
-%             t = (j-1)*.4 +(1+4*(point-1));
-%             
-%             elbowPose(j+1 +10*(point-2)) = quintPolyToPos(elbowPoly, t);
-%             wristPose(j+1 +10*(point-2)) = quintPolyToPos(wristPoly, t);
-%             shoulderPose(j+1+10*(point-2)) = quintPolyToPos(shoulderPoly, t);
-%         end
-%     
-%     end
-% 
-%     % Initialized first points
-%     shoulderPose(1)=0;
-%     elbowPose(1) = 0;
-%     wristPose(1) = 0;
-
-%% Quintic Polynomials
+    %% Cubic Polynomials
     
-%     % Joint Polynomial Matrices  
-%     shoulderQuint = [];
-%     elbowQuint = [];
-%     wristQuint = [];
-%              
-%     % For loop that initializes the Quintic Polynomials
-%     for point = 2:size(invArray,1)
-%         
-%         shoulderQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,1), invArray(point,1))';
-%         elbowQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,2), invArray(point,2))';
-%         wristQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,3), invArray(point,3))';
-%     
-%         % For loop that initializes the Poses of the Robots Trajectory
-%         for j=1:10
-%             t = (j-1)*.4 +(1+4*(point-1));
-%             
-%             elbowQuint(j+1 +10*(point-2)) = quintPolyToPos(elbowQPoly, t);
-%             wristQuint(j+1 +10*(point-2)) = quintPolyToPos(wristQPoly, t);
-%             shoulderQuint(j+1+10*(point-2)) = quintPolyToPos(shoulderQPoly, t);
-%         end
-%     
-%     end
-%     
-%     % Initializes first points
-%     elbowQuint(1) = 0;
-%     wristQuint(1) = 0;
-%     shoulderQuint(1) = 0;
-% 
-%     % Initializes final points
-%     elbowQuint(runTime) = 0;
-%     wristQuint(runTime) = 0;
-%     shoulderQuint(runTime) = 0;
-%     
     
-%     %% Path approaching singularities
-%     shoulderSingle = [];
-%     elbowSingle = [];
-%     wristSingle = [];
-%     
-%     singularityPoint = ikin([344,0,135])* (4096/(2*pi));
-%     
-%     shoulderSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(1))';
-%     elbowSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(2))';
-%     wristSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(3))';
-% 
-%     % For loop that initializes the Poses of the Robots Trajectory
-%     for j=1:10
-%         t = (j-1)*.4;
-% 
-%         elbowSingle(j) = quintPolyToPos(elbowSPoly, t);
-%         wristSingle(j) = quintPolyToPos(wristSPoly, t);
-%         shoulderSingle(j) = quintPolyToPos(shoulderSPoly, t);
-%     end
-
+    %     elbowPoly1 = cubePoly(1, 5, 0, 0, 7.55, 55.02);
+    %     wristPoly1 = cubePoly(1, 5, 0, 0, -254.75, 302.5);
+    %
+    %     elbowPoly2 = cubePoly(5, 9, 0, 0, 55.02, 580);
+    %     wristPoly2 = cubePoly(5, 9, 0, 0, 302.5, -254.75);
+    %
+    %     elbowPoly3 = cubePoly(9, 13, 0, 0, 580, 7.55);
+    %     wristPoly3 = cubePoly(9, 13, 0, 0, -254.75, -254.75);
+    %
+    %     elbowPose(1) = 0;
+    %     wristPose(1) = 0;
     
-        
+    
+    %% Extra Credit From Lab 3
+    
+    
+    %     % Inverse Points for Pyramid
+    %     inversePoint1 = ikin([225,50,0]);
+    %     inversePoint2 = ikin([344,0,135]);
+    %     inversePoint3 = ikin([175,-50,0]);
+    %     inversePoint4 = ikin([175,50,0]);
+    %     inversePoint5 = ikin([200,0,100]);
+    %
+    %
+    %     % Array of the Inverse Points
+    %     invArray =  [inversePoint1;
+    %                  inversePoint2;
+    %                  inversePoint3;
+    %                  inversePoint4;
+    %                  inversePoint1;
+    %                  inversePoint5;
+    %                  inversePoint2;
+    %                  inversePoint5;
+    %                  inversePoint3;
+    %                  inversePoint5;
+    %                  inversePoint4;
+    %                  0,0,0];
+    %
+    % %     % Inverse Points for Pyramid
+    % %     inversePoint1 = ikin([225,50,0]);
+    % %     inversePoint2 = ikin([225,-50,0]);
+    % %     inversePoint3 = ikin([175,-50,0]);
+    % %     inversePoint4 = ikin([175,50,0]);
+    % %     inversePoint5 = ikin([200,0,100]);
+    % %
+    % %
+    % %     % Array of the Inverse Points
+    % %     invArray =  [inversePoint1;
+    % %                  inversePoint2;
+    % %                  inversePoint3;
+    % %                  inversePoint4;
+    % %                  inversePoint1;
+    % %                  inversePoint5;
+    % %                  inversePoint2;
+    % %                  inversePoint5;
+    % %                  inversePoint3;
+    % %                  inversePoint5;
+    % %                  inversePoint4;
+    % %                  0,0,0];
+    %
+    % %     % Inverse Points for Spiral
+    % %     inversePoint1 = ikin([175,0,10]);
+    % %     inversePoint2 = ikin([225,-50,20]);
+    % %     inversePoint3 = ikin([275,0,30]);
+    % %     inversePoint4 = ikin([225,50,40]);
+    % %
+    % %     inversePoint5 = ikin([175,0,50]);
+    % %     inversePoint6 = ikin([225,-50,60]);
+    % %     inversePoint7 = ikin([275,0,70]);
+    % %     inversePoint8 = ikin([225,50,80]);
+    % %
+    % %     inversePoint9 = ikin([175,0,90]);
+    % %     inversePoint10 = ikin([225,-50,100]);
+    % %     inversePoint11 = ikin([275,0,110]);
+    % %     inversePoint12 = ikin([225,50,120]);
+    % %
+    % %
+    % %     % Array of the Inverse Points
+    % %     invArray =  [inversePoint1;
+    % %                  inversePoint2;
+    % %                  inversePoint3;
+    % %                  inversePoint4;
+    % %                  inversePoint5;
+    % %                  inversePoint6;
+    % %                  inversePoint7;
+    % %                  inversePoint8;
+    % %                  inversePoint9;
+    % %                  inversePoint10;
+    % %                  inversePoint11;
+    % %                  0,0,0];
+    %
+    %
+    %     % Joint Polynomial Matrices
+    %     shoulderPoly = [];
+    %     elbowPoly = [];
+    %     wristPoly = [];
+    %     invArray = [zeros(1,3);invArray];
+    %
+    %     % For loop that initializes the Cubic Polynomials
+    %     for point = 2:size(invArray,1)
+    %
+    %         shoulderPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,1), invArray(point,1))';
+    %         elbowPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,2), invArray(point,2))';
+    %         wristPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,3), invArray(point,2))';
+    %
+    %         % For loop that initializes the Poses of the Robots Trajectory
+    %         for j=1:10
+    %             t = (j-1)*.4 +(1+4*(point-1));
+    %
+    %             elbowPose(j+1 +10*(point-2)) = quintPolyToPos(elbowPoly, t);
+    %             wristPose(j+1 +10*(point-2)) = quintPolyToPos(wristPoly, t);
+    %             shoulderPose(j+1+10*(point-2)) = quintPolyToPos(shoulderPoly, t);
+    %         end
+    %
+    %     end
+    %
+    %     % Initialized first points
+    %     shoulderPose(1)=0;
+    %     elbowPose(1) = 0;
+    %     wristPose(1) = 0;
+    
+    %% Quintic Polynomials
+    
+    %     % Joint Polynomial Matrices
+    %     shoulderQuint = [];
+    %     elbowQuint = [];
+    %     wristQuint = [];
+    %
+    %     % For loop that initializes the Quintic Polynomials
+    %     for point = 2:size(invArray,1)
+    %
+    %         shoulderQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,1), invArray(point,1))';
+    %         elbowQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,2), invArray(point,2))';
+    %         wristQPoly = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0, 0, 0, invArray(point-1,3), invArray(point,3))';
+    %
+    %         % For loop that initializes the Poses of the Robots Trajectory
+    %         for j=1:10
+    %             t = (j-1)*.4 +(1+4*(point-1));
+    %
+    %             elbowQuint(j+1 +10*(point-2)) = quintPolyToPos(elbowQPoly, t);
+    %             wristQuint(j+1 +10*(point-2)) = quintPolyToPos(wristQPoly, t);
+    %             shoulderQuint(j+1+10*(point-2)) = quintPolyToPos(shoulderQPoly, t);
+    %         end
+    %
+    %     end
+    %
+    %     % Initializes first points
+    %     elbowQuint(1) = 0;
+    %     wristQuint(1) = 0;
+    %     shoulderQuint(1) = 0;
+    %
+    %     % Initializes final points
+    %     elbowQuint(runTime) = 0;
+    %     wristQuint(runTime) = 0;
+    %     shoulderQuint(runTime) = 0;
+    %
+    
+    %     %% Path approaching singularities
+    %     shoulderSingle = [];
+    %     elbowSingle = [];
+    %     wristSingle = [];
+    %
+    %     singularityPoint = ikin([344,0,135])* (4096/(2*pi));
+    %
+    %     shoulderSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(1))';
+    %     elbowSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(2))';
+    %     wristSPoly = quinpoly(0, 4, 0, 0, 0, 0, 0, singularityPoint(3))';
+    %
+    %     % For loop that initializes the Poses of the Robots Trajectory
+    %     for j=1:10
+    %         t = (j-1)*.4;
+    %
+    %         elbowSingle(j) = quintPolyToPos(elbowSPoly, t);
+    %         wristSingle(j) = quintPolyToPos(wristSPoly, t);
+    %         shoulderSingle(j) = quintPolyToPos(shoulderSPoly, t);
+    %     end
+    
+    
+    
 end
 
 %% Initializations for while loop
-    % Set Array of Values (In Encoder Ticks, I think, do not think these are
-    % used)
-    shoulder = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    elbow = [0, 0, 7.55, 55.02, 580, 100, 100,100,100,100];
-    wrist = [0, 0, -240, 302.5,-240, 0,0,0,0,0];
-    
-    % Initailized Return Matrices
-    ret = [];
-    ret2 = [];
-    ret3 = [];
+% Set Array of Values (In Encoder Ticks, I think, do not think these are
+% used)
+shoulder = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+elbow = [0, 0, 7.55, 55.02, 580, 100, 100,100,100,100];
+wrist = [0, 0, -240, 302.5,-240, 0,0,0,0,0];
 
-    % for tea = 1:length(shoulder) (this has been here for a while,
-    % consider deleting)
-    i=1;
-    tea=1;
-    tic
-    timerVal = tic;
-    counter = 0;
-    counter2=0;
+% Initailized Return Matrices
+ret = [];
+ret2 = [];
+ret3 = [];
+
+% for tea = 1:length(shoulder) (this has been here for a while,
+% consider deleting)
+i=1;
+tea=1;
+tic
+timerVal = tic;
+counter = 0;
+counter2=0;
+lastState = 0;
+
+searching = 1;
+sorting = 2;
+moving = 3;
+state = searching;
+
+%% While Loop
+while 1
     
-    [objectShoulder, objectElbow, objectWrist, deleteMe] = pickUpObjects();
     
-%% While Loop 
-    while tea<=runTime
+    
+    if state == searching
+        [objectShoulder, objectElbow, objectWrist, deleteMe, colors, diskDia] = pickUpObjects(1);
+        state = moving;
+        lastState = searching;
+    end
+    
+    
+    
+    
+    if (state == sorting)
+        [P1, P2, P3, P4, Z1, Z2, Z3] = fwkinJacob(returnPacket(1),returnPacket(2),returnPacket(3));
+        [objectShoulder, objectElbow, objectWrist] = sortOne(colors(1), diskDia(1), P4);
         
-        % tests for singularity
-        radianShoulder = objectShoulder(tea) * ((2*pi)/4096);
-        radianElbow = objectElbow(tea) * ((2*pi)/4096);
-        radianWrist = objectWrist(tea) * ((2*pi)/4096);
-        singularityWarning([radianShoulder, radianElbow, radianWrist]);
+        state = moving;
+        lastState = sorting;
+    end
+    
+    
+    
+    
+    
+    
+    counterVal = tic;
+    %incremtal = (single(k) / sinWaveInc); (what is this)
+    
+    viaPts = zeros(1, 100);%%
+    
+    
+    % Send packet to the server and get the response
+    
+    %pp.write sends a 15 float packet to the micro controller
+    
+    if state == moving
         
-        counterVal = tic;
-        %incremtal = (single(k) / sinWaveInc); (what is this)
-        
-        viaPts = zeros(1, 100);
-        % Send packet to the server and get the response
-        
-        %pp.write sends a 15 float packet to the micro controller
         if counter>=0.4
-            packet = zeros(15, 1, 'single');
-            packet(1) = objectShoulder(tea); 
-            packet(2) = objectElbow(tea);    
-            packet(3) = objectWrist(tea);
-            disp(objectShoulder(tea));
-            disp(objectElbow(tea));
-            disp(objectWrist(tea));                
-            tea=tea+1;
-            pp.write(SERV_ID, packet);
-            pause(0.003);
-            counter = 0;
-            
+            if tea <= size(objectShoulder,2)
+                % tests for singularity
+                radianShoulder = objectShoulder(tea) * ((2*pi)/4096);
+                radianElbow = objectElbow(tea) * ((2*pi)/4096);
+                radianWrist = objectWrist(tea) * ((2*pi)/4096);
+                singularityWarning([radianShoulder, radianElbow, radianWrist]);
+                
+                
+                
+                packet = zeros(15, 1, 'single');
+                packet(1) = objectShoulder(tea);
+                packet(2) = objectElbow(tea);
+                packet(3) = objectWrist(tea);
+                disp(objectShoulder(tea));
+                disp(objectElbow(tea));
+                disp(objectWrist(tea));
+                tea=tea+1;
+                pp.write(SERV_ID, packet);
+                pause(0.003);
+                counter = 0;
+                
+                
+            else
+                tea = 1;
+                if lastState == searching
+                    pp.write(SERV_ID_GRIP, 0);
+                    
+                    state = sorting;
+                    lastState = moving;
+                else
+                    state = searching;
+                    pp.write(SERV_ID_GRIP, 1);
+                end
+                
+            end
         end
-        %pause(0.003); % Minimum amount of time required between write and read
-        
-        pp.write(SERV_ID_READ, zeros(15,1,'single'));
-        
-        pause(0.003);
-        
-        returnPacket = pp.read(SERV_ID_READ); %pp.read reads a returned 15 float backet from the nucleo.
-        %timerVal = tic; Probably remove this line 
-        elapsedTime = toc(timerVal);
-        
-        counter2 = toc(counterVal)+counter2;
-        
-       
-        TipVals = plotDaArm(returnPacket(1:3),TipVels');
-        
-        if counter2 >=.1
-            TipVels = TipVals - TipValSave;
-            TipVels = TipVels/counter2;
-            TipValSave = TipVals;
-            counter2=0;
-        end
-       
-        elap = [elap; elapsedTime];
-        TipPos = [TipPos; TipVals'];
-        csvwrite('Tip Position', TipPos);
-        
-        setpts = [setpts; returnPacket(1:3)'];
-        sample = diff(elap);
-        csvwrite('Set Points', setpts);
-        
-        % Return Packet Initializations
-        ret = [ret;returnPacket(1)];
-        ret2 = [ret2;returnPacket(2)];
-        ret3 = [ret3;returnPacket(3)];
-        
-        counter = toc(counterVal)+counter
-        
-        % Incrementation of i
-        i= i+1;
-        
-%% Debug stuff (DELETE AFTER NO LONGER NEEDING DEBUG)
-%         if DEBUG
-%             disp('Sent Packet:');
-%             disp(packet);
-%             disp('Received Packet:');
-%             disp(returnPacket);
-%         end
-%         
-%         for x = 0:3
-%             packet((x*3)+1)=0.1;
-%             packet((x*3)+2)=0;
-%             packet((x*3)+3)=0;
-%         end
-%         
-%         This version will send the command once per call of pp.write
-%         pp.write(02, packet);
-%         pause(0.003);
-%         returnPacket2=  pp.read(02);
-%         this version will start an auto-polling server and read back the
-%         current data
-%         returnPacket2=  pp.command(65, packet);
-%         
-%         if DEBUG
-%             %disp('Received Packet 2:');
-%             %disp(returnPacket2);
-%         end
-%%
-        toc
-        pause(.003); %timeit(returnPacket) !FIXME why is this needed?
         
     end
+    
+    
+    
+    
+    %pause(0.003); % Minimum amount of time required between write and read
+    % qf = location to be sorted (167, -160)
+    
+    
+    
+    
+    pp.write(SERV_ID_READ, zeros(15,1,'single'));
+    
+    pause(0.003);
+    
+    returnPacket = pp.read(SERV_ID_READ);
+    
+    %pp.read reads a returned 15 float backet from the nucleo.
+    
+    elapsedTime = toc(timerVal);
+    
+    counter2 = toc(counterVal)+counter2;
+    
+    
+    
+    
+    TipVals = plotDaArm(returnPacket(1:3),TipVels');
+    
+    if counter2 >=.1
+        TipVels = TipVals - TipValSave;
+        TipVels = TipVels/counter2;
+        TipValSave = TipVals;
+        counter2=0;
+    end
+    
+    elap = [elap; elapsedTime];
+    TipPos = [TipPos; TipVals'];
+    csvwrite('Tip Position', TipPos);
+    
+    setpts = [setpts; returnPacket(1:3)'];
+    sample = diff(elap);
+    csvwrite('Set Points', setpts);
+    
+    % Return Packet Initializations
+    ret = [ret;returnPacket(1)];
+    ret2 = [ret2;returnPacket(2)];
+    ret3 = [ret3;returnPacket(3)];
+    
+    counter = toc(counterVal)+counter
+    
+    % Incrementation of i
+    i= i+1;
+    
+    %% Debug stuff (DELETE AFTER NO LONGER NEEDING DEBUG)
+    %         if DEBUG
+    %             disp('Sent Packet:');
+    %             disp(packet);
+    %             disp('Received Packet:');
+    %             disp(returnPacket);
+    %         end
+    %
+    %         for x = 0:3
+    %             packet((x*3)+1)=0.1;
+    %             packet((x*3)+2)=0;
+    %             packet((x*3)+3)=0;
+    %         end
+    %
+    %         This version will send the command once per call of pp write
+    %         pp.write(02, packet);
+    %         pause(0.003);
+    %         returnPacket2=  pp.read(02);
+    %         this version will start an auto-polling server and read back the
+    %         current data
+    %         returnPacket2=  pp.command(65, packet);
+    %
+    %         if DEBUG
+    %             %disp('Received Packet 2:');
+    %             %disp(returnPacket2);
+    %         end
+    %%
+    toc
+    pause(.003); %timeit(returnPacket) !FIXME why is this needed?
+    
+end
 
 % Time Matrix
 csvwrite('Time', elap);
@@ -512,11 +577,11 @@ figure('Name', 'Tip Position in xyz plane', 'NumberTitle', 'off')
 % Plot Function
 plot3(xTip(:,1),yTip(:,1), zTip(:,1), '-');
 % Plotting of the dots
-%plot(225,100, 'ro');           
+%plot(225,100, 'ro');
 %plot(175,-34.28, 'ro');
 xlim([0,350])
 ylim([-200,200])
-zlim([-50,300]) 
+zlim([-50,300])
 %hold off;
 title(' Tip Position')
 xlabel('mm')
