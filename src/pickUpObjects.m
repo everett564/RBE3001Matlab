@@ -1,4 +1,4 @@
-function [shoulder, elbow, wrist, invArray, colors, diskDia] = pickUpObjects(ob)
+function [shoulder, elbow, wrist, invArray, colors, colorAndBase] = pickUpObjects(ob)
 
     close all
 
@@ -15,12 +15,11 @@ function [shoulder, elbow, wrist, invArray, colors, diskDia] = pickUpObjects(ob)
                  -0.0180  ,  0.5956  ,  0.8031 , 277.1416;
                   0 ,        0   ,      0,       1.0000];
 
-    checkToCam = camToCheck^-1;
-    %checkToOrigin = originToCheck^-1;
+
 
     imgOrg = snapshot(cam);
 
-    [imOutput, robotFramePose, diskDia, colors] = findObjs(imgOrg, checkToOrigin, camToCheck, cParams);
+    [imOutput, robotFramePose, colorAndBase, colors] = findObjs(imgOrg, checkToOrigin, camToCheck, cParams);
     
     objectPoints = [];
     aboveObject = [];
@@ -29,7 +28,7 @@ function [shoulder, elbow, wrist, invArray, colors, diskDia] = pickUpObjects(ob)
     % [0,0,50] -> hover above object -> go to object
     if size(robotFramePose,1)> 0
         objectPoints(ob,1:2) = robotFramePose(ob,1:2);
-        objectPoints(ob,3) = -10;
+        objectPoints(ob,3) = -20;
         objectKin = ikin(objectPoints(ob,1:3));
         
         aboveObject(ob,1:2) = robotFramePose(ob,1:2);
@@ -53,7 +52,7 @@ function [shoulder, elbow, wrist, invArray, colors, diskDia] = pickUpObjects(ob)
 
         shoulderPoints = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,1), invArray(point,1))';
         elbowPoints = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,2), invArray(point,2))';
-        wristPoints = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,3), invArray(point,2))';
+        wristPoints = quinpoly(1+4*(point-1), 5+4*(point-1), 0, 0,0,0, invArray(point-1,3), invArray(point,3))';
 
         % For loop that initializes the Poses of the Robots Trajectory
         for j=1:10
@@ -65,6 +64,8 @@ function [shoulder, elbow, wrist, invArray, colors, diskDia] = pickUpObjects(ob)
         end
 
     end
-
+shoulder = shoulder(1,2:end); 
+elbow = elbow(1,2:end); 
+wrist = wrist(1,2:end,1); 
 
 end

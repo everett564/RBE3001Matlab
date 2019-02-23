@@ -1,5 +1,5 @@
 % findObjs detects objects that may be present in an RGB image
-function [imOutput, robotFramePose, diskDia, colors] = findObjs(imOrig, T_checker_to_robot, T_cam_to_checker, cameraParams)
+function [imOutput, robotFramePose, colorAndBase, colorsOut] = findObjs(imOrig, T_checker_to_robot, T_cam_to_checker, cameraParams)
 
 % image enhancement
  
@@ -39,11 +39,11 @@ for i = 1:size(centers,1)
     R = s(1:3,1:3);
     t = s(1:3,4);
     worldPoints(i,:) = pointsToWorld(cameraParams, R, t, centers(i,:));
-    worldPoints(i,1) = -1*( worldPoints(i,1) - 275.8);
-    worldPoints(i,2) =  worldPoints(i,2) + 113.6;
+    worldPoints(i,1) = -1*( worldPoints(i,1) - 275.8);%275.8
+    worldPoints(i,2) =  worldPoints(i,2) + 113.6;%113.6
     
     
-
+    colorsOut = [];
     row = centers(i,:);
     pixVal = impixel(im,row(1),row(2));
     for j= 1:radii/5
@@ -53,12 +53,15 @@ for i = 1:size(centers,1)
     
     pixVal = mean(pixVal);
     
-    if pixVal(1) > 70 && pixVal(3) > 100 
-        colors{i} = ['green:' num2str(worldPoints(i,:))];
-    elseif pixVal(3) > 150  
-         colors{i} =  ['blue:' num2str(worldPoints(i,:))];
+    if pixVal(3) > 150 && pixVal(3) > pixVal(2) && pixVal(3) > pixVal(1)
+         colors{i} =  ['blue:' num2str(pixVal)];
+         colorsOut(i) = 2;
+    elseif (pixVal(2) - pixVal(1)) > 50 && (pixVal(2) - pixVal(1)) > 50
+        colors{i} = ['green:' num2str(pixVal)];
+        colorsOut(i) = 1;
     else 
-         colors{i} =  ['yellow:' num2str(worldPoints(i,:))];
+         colors{i} =  ['yellow:' num2str(pixVal)];
+         colorsOut(i) = 3;
     end
     
 end
@@ -101,12 +104,19 @@ for i = 1:size(centers2,1)
     
     if row > 50 
        sizes{i} = ['Large: ', num2str(row)];
+       sizeOut(i) = 2;
     else 
        sizes{i} = ['Small: ', num2str(row)];
+       sizeOut(i) = 1;
     end
     
 end
 
+colorAndBase = []
+for k = 1:size(centers,1)
+        sizeOfBase = findNearestBase (centers(k,:),centers2,sizeOut);
+        colorAndBase(k,:) = [colorsOut(k) sizeOfBase];
+end
 
 % Insert labelsim5 = insertObjectAnnotation(im, 'rectangle', location, colors);
 
@@ -115,13 +125,13 @@ end
 %title('Detected Colors');
 
 
-%im4= insertObjectAnnotation(im5, 'rectangle', locations, sizes);
+im4= insertObjectAnnotation(im5, 'rectangle', locations, sizes);
 
 
 
 %figure; imshow(im4);
 %title('Detected Bases');
-image(im5);
+image(im4);
 imOutput = im5;
 
 robotFramePose = worldPoints;
