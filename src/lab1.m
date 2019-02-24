@@ -359,7 +359,10 @@ while 1
     % Searching State
     if state == searching
         pp.write(SERV_ID_GRIP, 1);
+        
+        
         [objectShoulder, objectElbow, objectWrist, deleteMe, colors, colorAndBase] = pickUpObjects(1);
+        
         state = moving;
         lastState = searching;
     end
@@ -374,10 +377,11 @@ while 1
         
         [P1, P2, P3, P4, Z1, Z2, Z3] = fwkinJacob(rp1,rp2,rp3);
         
-        disp(colors)
+        %disp(colors)
         %disp(diskDia)
-        disp(P4)
-        
+        %disp(P4)
+        colorAndBase=colorAndBase(all(colorAndBase,2),:); %removes all rows with zero
+        disp(colorAndBase)
         P4 = [P4(1); -P4(2); P4(3)];
         
         [objectShoulder, objectElbow, objectWrist] = sortOne(colorAndBase(1,1), colorAndBase(1,2), P4);

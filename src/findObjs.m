@@ -39,11 +39,10 @@ for i = 1:size(centers,1)
     R = s(1:3,1:3);
     t = s(1:3,4);
     worldPoints(i,:) = pointsToWorld(cameraParams, R, t, centers(i,:));
-    worldPoints(i,1) = -1*( worldPoints(i,1) - 275.8);%275.8
+    worldPoints(i,1) = -1*( worldPoints(i,1) - 285.8);%275.8
     worldPoints(i,2) =  worldPoints(i,2) + 113.6;%113.6
     
     
-    colorsOut = [];
     row = centers(i,:);
     pixVal = impixel(im,row(1),row(2));
     for j= 1:radii/5
@@ -59,7 +58,7 @@ for i = 1:size(centers,1)
     elseif (pixVal(2) - pixVal(1)) > 50 && (pixVal(2) - pixVal(1)) > 50
         colors{i} = ['green:' num2str(pixVal)];
         colorsOut(i) = 1;
-    else 
+    else
          colors{i} =  ['yellow:' num2str(pixVal)];
          colorsOut(i) = 3;
     end
@@ -82,7 +81,7 @@ end
 %figure; imshow(im3, 'InitialMagnification', 100);
 %title('Segmented Bases');
     
-[centers2, radii2, metric] = imfindcircles(im3,[30 70], 'Sensitivity', .94);
+[centers2, radii2, metric] = imfindcircles(im3,[30 70], 'Sensitivity', .945);
 
 if size(centers2) > 0 
 viscircles(centers2, radii2,'EdgeColor','b');
@@ -112,10 +111,12 @@ for i = 1:size(centers2,1)
     
 end
 
-colorAndBase = []
+colorAndBase = [];
 for k = 1:size(centers,1)
-        sizeOfBase = findNearestBase (centers(k,:),centers2,sizeOut);
-        colorAndBase(k,:) = [colorsOut(k) sizeOfBase];
+        sizeOfBase = findNearestBase(centers(k,:),centers2,sizeOut);
+        if colorsOut(k) > 0
+            colorAndBase(k,:) = [colorsOut(k) sizeOfBase];
+        end
 end
 
 % Insert labelsim5 = insertObjectAnnotation(im, 'rectangle', location, colors);

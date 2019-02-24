@@ -28,7 +28,7 @@ elseif color == 3
     
     
     % Blue
-else %if size(ismember(color,'blue')) ==0
+elseif color == 2 
     if baseSize == 2
         
         % qf = location to be sorted (167, -160, -10)
@@ -37,6 +37,8 @@ else %if size(ismember(color,'blue')) ==0
         % qf = location to be sorted (167, 160, -10)
         final = [167, 180, 50]; % always gets to this, never any other
     end
+else
+    disp("FAILURE")
 end
 
 disp(final)
