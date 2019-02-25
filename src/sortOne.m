@@ -1,79 +1,80 @@
+% Sort One Function
+% Sorts the current ball to the correct location and returns the generated
+% trajectory.
+% color - color of the ball
+% 1 - Green (top)
+% 2 - Blue (bottom)
+% 3 - Yellow (middle)
+% baseSize - the size of the base
+% 1 - small (left)
+% 2 - large (right) 
+% init - the initial/current positon of the arm
+% returns the trajectory of all of the joints
+
 function [shoulderQuint, elbowQuint, wristQuint] = sortOne(color, baseSize, init)
+
+%% Initalization of Variables
 final = [175,0,100];
 initial = init';
-% This is where we have it make the trajectory variables
 
-
-%% This logic is broken
+%% Determines the End Position based on color and baseSize
 % Green
-if color ==1
-    if baseSize ==2
-        % qf = location to be sorted (254, -160, -10)
+if color == 1
+    if baseSize == 2
         final = [254, -180, 50];
     else
-        % qf = location to be sorted (254, 160, -10)
         final = [254, 180, 50];
     end
     
-    
-    % Yellow
+% Yellow
 elseif color == 3
-    if baseSize  ==2
-        % qf = location to be sorted (85, -160, -10)
+    if baseSize == 2
         final = [85, -180, 50];
     else
-        % qf = location to be sorted (85, 160, -10)
         final = [85, 180, 50];
     end
     
     
-    % Blue
+% Blue
 elseif color == 2 
     if baseSize == 2
-        
-        % qf = location to be sorted (167, -160, -10)
         final = [167, -180, 50];
     else
-        % qf = location to be sorted (167, 160, -10)
-        final = [167, 180, 50]; % always gets to this, never any other
+        final = [167, 180, 50]; 
     end
 else
     disp("FAILURE")
 end
 
 disp(final)
-%% This is where we make the trajectory
 
+%% Trajectory Generation
+
+% Initial Matricies
 objectPoints = [];
 aboveObject = [];
 invArray = [];
 
-% robotFrame pose is the initial conditions 
-% 
-% [0,0,50] -> hover above object -> go to object
+shoulderPoints = [];
+elbowPoints = [];
+wristPoints = [];
+
 if size(initial,1)> 0
-    
-%     objectPoints(1,1:2) = inital(1,1:2);
-%     objectPoints(1,3) = -10;
+ 
     objectKin = ikin(initial(1,1:3));
     
     aboveObject(1,1:2) = initial(1,1:2);
     aboveObject(1,3) = 50;
     aboveObjectKin = ikin(aboveObject(1,1:3));
     
-    finalDest = ikin(final); % this needs to be the end location
-    
-    
+    finalDest = ikin(final);
+
     place = 3;
     invArray(place,1:3) = finalDest;            
     invArray(place-1,1:3) = aboveObjectKin;  
     invArray(place-2,1:3) = objectKin;      
     
 end
-
-shoulderPoints = [];
-elbowPoints = [];
-wristPoints = [];
 
 
 % For loop that initializes the Quintic Polynomials
@@ -94,9 +95,8 @@ for point = 2:size(invArray,1)
     
 end
 
-% invArray = initial';
-% invArray = [invArray; final];
-% [shoulderQuint, elbowQuint, wristQuint] = QuinticPoly(invArray);
+% Removes the first value of every Generation to keep the robot from going
+% to the 0 position. 
 shoulderQuint = shoulderQuint(1,2:end); 
 elbowQuint = elbowQuint(1,2:end); 
 wristQuint = wristQuint(1,2:end,1); 

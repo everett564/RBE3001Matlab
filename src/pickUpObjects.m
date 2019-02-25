@@ -18,6 +18,7 @@ function [shoulder, elbow, wrist, invArray, colors, colorAndBase] = pickUpObject
 
 
     imgOrg = snapshot(cam);
+  
 
     [imOutput, robotFramePose, colorAndBase, colors] = findObjs(imgOrg, checkToOrigin, camToCheck, cParams);
     
@@ -41,8 +42,12 @@ function [shoulder, elbow, wrist, invArray, colors, colorAndBase] = pickUpObject
         invArray(place-2,1:3) = hover;
         invArray(place-1,1:3) = aboveObjectKin;
         invArray(place,1:3) = objectKin;
+    else
+        hover = ikin([175,0,50]);
+        invArray(1,1:3) = hover;
+        invArray(2,1:3) = hover;
     end
-   
+    
     shoulderPoints = [];
     elbowPoints = [];
     wristPoints = [];
@@ -64,6 +69,7 @@ function [shoulder, elbow, wrist, invArray, colors, colorAndBase] = pickUpObject
         end
 
     end
+   
 shoulder = shoulder(1,2:end); 
 elbow = elbow(1,2:end); 
 wrist = wrist(1,2:end,1); 
