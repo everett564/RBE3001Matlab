@@ -19,6 +19,7 @@ myHIDSimplePacketComs.setPid(pid);
 myHIDSimplePacketComs.setVid(vid);
 myHIDSimplePacketComs.connect();
 pp = PacketProcessor(myHIDSimplePacketComs);
+addpath('Kinematics/Inverse','Kinematics/Differential','Kinematics/Forward','Camer);
 
 cam = webcam();
 cParams = camCal();

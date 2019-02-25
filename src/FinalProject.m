@@ -30,6 +30,7 @@ myHIDSimplePacketComs=HIDfactory.get();
 myHIDSimplePacketComs.setPid(pid);
 myHIDSimplePacketComs.setVid(vid);
 myHIDSimplePacketComs.connect();
+addpath('Kinematics/Inverse','Kinematics/Differential','Kinematics/Forward','CameraCalibration','Trajectory','Plotting','ObjectDetection','Other');
 
 %% Initializations for Graphing
 
