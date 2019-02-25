@@ -17,6 +17,5 @@ function q = quintPolyToPos(a, t)
     
     % Formula
     q = (a0 + a1*t + a2*(t^2) + a3*(t^3) + a4*(t^4) + a5*(t^5))*(4096/(2*pi));
-    q;
     
 end

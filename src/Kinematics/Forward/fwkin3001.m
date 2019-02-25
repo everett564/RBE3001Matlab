@@ -6,10 +6,6 @@
 % t3 - the encoder value of the wrist
 % return: This function returns a matrix of three positions in radians
 
-
-%%% THIS FUNCTION NEEDS MODIFICATION TO BE MORE LIKE FWKINJACOB, And how it
-%%% returns things... 
-
 function [P1 P2 P3] = fwkin3001(t1,t2,t3)
     
     % Length of each arm

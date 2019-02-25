@@ -1,3 +1,5 @@
+% Function is not used and is replaced
+
 function [shoulderQuint, elbowQuint, wristQuint] = QuinticPoly(invArray)
 
 % Joint Polynomial Matrices Initialized

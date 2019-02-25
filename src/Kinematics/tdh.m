@@ -1,6 +1,6 @@
 % TDH Function 
 % takes parameters d, t, a, al
-% returns the transformation matrix
+% returns the transformation matrix T
 
 function T = tdh(d,t,a,al)
  

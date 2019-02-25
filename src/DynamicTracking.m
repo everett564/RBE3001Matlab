@@ -1,3 +1,9 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  RBE 3001 - DYNAMIC TRACKING - TEAM 3  %%
+%% Will dynamically track a single object %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Initialization Statements
 clear all
 close all
 clear
@@ -19,8 +25,9 @@ myHIDSimplePacketComs.setPid(pid);
 myHIDSimplePacketComs.setVid(vid);
 myHIDSimplePacketComs.connect();
 pp = PacketProcessor(myHIDSimplePacketComs);
-addpath('Kinematics/Inverse','Kinematics/Differential','Kinematics/Forward','CameraCalibration','Trajectory','ObjectDetection','Plotting','Other');
+addpath('Kinematics','Kinematics/Inverse','Kinematics/Differential','Kinematics/Forward','CameraCalibration','Trajectory','ObjectDetection','Plotting','Other');
 
+%% Cam Configuration
 cam = webcam();
 cParams = camCal();
 
@@ -34,13 +41,15 @@ camToCheck= [-0.0017 , -0.8032 ,   0.5957,  107.6207;
     -0.0180  ,  0.5956  ,  0.8031 , 277.1416;
     0 ,        0   ,      0,       1.0000];
 
-checkToCam = camToCheck^-1;
-%checkToOrigin = originToCheck^-1;
-
+%% While Loop
 while 1
+    % Take a Snapshot
     imgOrg = snapshot(cam);
     
+    % Find the Object
     [imOutput, robotFramePose,  colorAndBase, colorsOut] = findObjs(imgOrg, checkToOrigin, camToCheck, cParams);
+    
+    % Send the Packets
     if size(robotFramePose,1)>0
         T = ikin([robotFramePose(1),robotFramePose(2), 50]);
         shoulderPos = T(1);
